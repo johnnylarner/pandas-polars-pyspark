@@ -17,14 +17,33 @@ class PaymentType(Enum):
     VOIDED_TRIP = 6
 
 
+ROUTE_COLUMNS = [
+    "pulocationid_borough",
+    "pulocationid_zone",
+    "dolocationid_borough",
+    "dolocationid_zone",
+]
+
+
 def add_features(trip_df: DataFrame, zone_df: DataFrame) -> DataFrame:
     """Returns a polars DataFrame containing
     all the features required for the NYC
     Taxi dataset.
     """
+    trip_df = rename_columns_as_lowercase(trip_df)
+    zone_df = rename_columns_as_lowercase(zone_df)
+    trip_df = update_payment_type_as_string_values(trip_df)
     trip_df = add_borough_and_zone(trip_df, zone_df, "pulocationid")
     trip_df = add_borough_and_zone(trip_df, zone_df, "dolocationid")
     return trip_df
+
+
+def rename_columns_as_lowercase(df: pl.DataFrame) -> pl.DataFrame:
+    """Returns a polars DataFrame containing
+    the df DataFrame with all columns
+    renamed to be lowercase.
+    """
+    return df.rename({col: col.lower() for col in df.columns})
 
 
 def update_payment_type_as_string_values(trip_df: DataFrame) -> DataFrame:
@@ -67,18 +86,13 @@ def calc_result_most_frequent_three_routes(trip_df: DataFrame) -> DataFrame:
     most frequently routes including the
     number of times each route was travelled.
     """
-    route_columns = [
-        "pulocationid_borough",
-        "pulocationid_zone",
-        "dolocationid_borough",
-        "dolocationid_zone",
-    ]
+
     trip_start_and_stop_is_known = (pl.col("pulocationid_borough") != "Unknown") & (
         pl.col("dolocationid_borough") != "Unknown"
     )
     known_trips_df = trip_df.filter(trip_start_and_stop_is_known)
 
-    num_trips_df = known_trips_df.groupby(route_columns).agg(
+    num_trips_df = known_trips_df.groupby(ROUTE_COLUMNS).agg(
         pl.count().cast(pl.Int64).alias("num_trips")
     )
 
