@@ -3,6 +3,7 @@ import polars as pl
 from ppp.polars import (
     add_features,
     calc_cash_journeys_per_pickup,
+    calc_highest_tolls_per_route,
     calc_result_most_frequent_three_routes,
     update_payment_type_as_string_values,
 )
@@ -30,6 +31,9 @@ def main():
 
     cash_journeys = calc_cash_journeys_per_pickup(df)
     logger.info("cash_journeys: %s", cash_journeys)
+
+    tolls_per_route = calc_highest_tolls_per_route(df)
+    logger.info("tolls per route: %s", tolls_per_route)
 
 
 if __name__ == "__main__":

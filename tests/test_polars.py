@@ -1,12 +1,80 @@
 import polars as pl
+import pytest
 from polars.testing import assert_frame_equal
 
 from ppp.polars import (
     add_borough_and_zone,
     calc_cash_journeys_per_pickup,
+    calc_highest_tolls_per_route,
     calc_result_most_frequent_three_routes,
     update_payment_type_as_string_values,
 )
+
+
+@pytest.fixture
+def locations():
+    return {
+        "pulocationid_borough": [
+            "Manhattan",
+            "Manhattan",
+            "Manhattan",
+            "Queens",
+            "Queens",
+            "Bronx",
+            "Bronx",
+            "Brooklyn",
+            "Brooklyn",
+            "Brooklyn",
+            "Unknown",
+            "Unknown",
+            "Unknown",
+        ],
+        "pulocationid_zone": [
+            "Upper East Side",
+            "Upper East Side",
+            "Upper East Side",
+            "Astoria",
+            "Hunters Point",
+            "Riverdale",
+            "Riverdale",
+            "Williamsburg",
+            "Williamsburg",
+            "Bushwick",
+            "Unknown",
+            "Unknown",
+            "Unknown",
+        ],
+        "dolocationid_borough": [
+            "Queens",
+            "Queens",
+            "Queens",
+            "Manhattan",
+            "Manhattan",
+            "Bronx",
+            "Bronx",
+            "Bronx",
+            "Bronx",
+            "Bronx",
+            "Unknown",
+            "Unknown",
+            "Unknown",
+        ],
+        "dolocationid_zone": [
+            "Astoria",
+            "Astoria",
+            "Astoria",
+            "Upper East Side",
+            "Lower East Side",
+            "Fordham",
+            "Fordham",
+            "Riverdale",
+            "Riverdale",
+            "Riverdale",
+            "Unknown",
+            "Unknown",
+            "Unknown",
+        ],
+    }
 
 
 def assert_pl_frame_equal(
@@ -84,70 +152,7 @@ def test_add_borough_and_zone():
     assert_frame_equal(actual_df, expected_df)
 
 
-def test_calc_result_most_frequent_three_routes():
-    locations = {
-        "pulocationid_borough": [
-            "Manhattan",
-            "Manhattan",
-            "Manhattan",
-            "Queens",
-            "Queens",
-            "Bronx",
-            "Bronx",
-            "Brooklyn",
-            "Brooklyn",
-            "Brooklyn",
-            "Unknown",
-            "Unknown",
-            "Unknown",
-        ],
-        "pulocationid_zone": [
-            "Upper East Side",
-            "Upper East Side",
-            "Upper East Side",
-            "Astoria",
-            "Hunters Point",
-            "Riverdale",
-            "Riverdale",
-            "Williamsburg",
-            "Williamsburg",
-            "Bushwick",
-            "Unknown",
-            "Unknown",
-            "Unknown",
-        ],
-        "dolocationid_borough": [
-            "Queens",
-            "Queens",
-            "Queens",
-            "Manhattan",
-            "Manhattan",
-            "Bronx",
-            "Bronx",
-            "Bronx",
-            "Bronx",
-            "Bronx",
-            "Unknown",
-            "Unknown",
-            "Unknown",
-        ],
-        "dolocationid_zone": [
-            "Astoria",
-            "Astoria",
-            "Astoria",
-            "Upper East Side",
-            "Lower East Side",
-            "Fordham",
-            "Fordham",
-            "Riverdale",
-            "Riverdale",
-            "Riverdale",
-            "Unknown",
-            "Unknown",
-            "Unknown",
-        ],
-    }
-
+def test_calc_result_most_frequent_three_routes(locations):
     trip_df = pl.DataFrame(locations)
     actual_df = calc_result_most_frequent_three_routes(trip_df)
 
@@ -193,6 +198,37 @@ def test_calc_cash_journeys_per_pickup():
             "pulocationid": ["1", "4"],
             "num_cash_journeys": [2, 1],
         }
+    )
+
+    assert_pl_frame_equal(actual_df, expected_df)
+
+
+def test_calc_highest_tolls_per_route(locations):
+    locations_with_tolls = {
+        **locations,
+        "tolls_amount": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+        ],
+    }
+
+    trip_df = pl.DataFrame({**locations_with_tolls})
+    actual_df = calc_highest_tolls_per_route(trip_df)
+    actual_df = actual_df.select("tolls_amount_sum")
+
+    expected_df = pl.DataFrame(
+        {"tolls_amount_sum": [3.0, 3.0, 2.0, 2.0, 1.0, 1.0, 1.0]}
     )
 
     assert_pl_frame_equal(actual_df, expected_df)

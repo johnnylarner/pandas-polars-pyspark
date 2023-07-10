@@ -111,3 +111,15 @@ def calc_cash_journeys_per_pickup(trip_df: DataFrame) -> DataFrame:
         .agg(pl.count().cast(pl.Int64).alias("num_cash_journeys"))
         .sort(by="num_cash_journeys", descending=True)
     )
+
+
+def calc_highest_tolls_per_route(trip_df: DataFrame) -> DataFrame:
+    """Returns a polars DataFrame containing
+    the highest total tolls per route.
+    """
+
+    return (
+        trip_df.groupby(ROUTE_COLUMNS)
+        .agg(pl.col("tolls_amount").sum().suffix("_sum"))
+        .sort(pl.col("tolls_amount_sum"), descending=True)
+    )
