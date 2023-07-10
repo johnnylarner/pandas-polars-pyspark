@@ -5,7 +5,7 @@ logging:
   level: "INFO"
 
 schemas:
-  sales: 
+  sales:
     sale_id: integer
     sale_timestamp: integer
     sale_value: integer
@@ -17,7 +17,7 @@ schemas:
   products:
     product_id: integer
     name: string
-    unit_price_usd: integer 
+    unit_price_usd: integer
     available_since: integer
     available_until: integer
     category: string
