@@ -71,5 +71,4 @@ jobs:
         run: |
           pip install poetry==$POETRY_VERSION
           poetry install --no-root
-          source `poetry env info --path`/bin/activate
-          pytest tests
+          poetry run pytest tests
