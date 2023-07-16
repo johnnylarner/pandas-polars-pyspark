@@ -70,5 +70,5 @@ jobs:
       - name: Run unit tests
         run: |
           pip install poetry==$POETRY_VERSION
-          poetry install --no-root
+          poetry install
           poetry run pytest tests
