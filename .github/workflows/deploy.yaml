@@ -70,5 +70,5 @@ jobs:
       - name: Run unit tests
         run: |
           pip install dist/$PACKAGE_NAME-*.whl poetry==$POETRY_VERSION
-          poetry install --only dev-dependencies
+          poetry install --only dev
           poetry run pytest tests
