@@ -1,0 +1,70 @@
+name: Deploy my package
+
+on:
+  push:
+    branches:
+      - "main"
+      - "features/**"
+      - "improvements/**"
+      - "bug-fixes/**"
+
+env:
+  PACKAGE_NAME: ppp
+  ARTIFACTS_PATH: artifacts
+  POETRY_VERSION: 1.4.2
+  POETRY_CACHE_DIR: $CI_PROJECT_DIR/.cache/poetry
+
+jobs:
+  build:
+    name: Build package
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.10
+
+      - name: Install poetry
+        run: |
+          pip install poetry==$POETRY_VERSION
+          poetry config cache-dir $POETRY_CACHE_DIR
+
+      - name: Run hooks
+        run: |
+            poetry run pre-commit run --all-files
+
+      - name: Build wheel
+        run: |
+          pip install poetry==$POETRY_VERSION
+          poetry build -f wheel
+          mv dist/ $ARTIFACTS_PATH
+
+      - name: Upload wheel as artifact
+        uses: actions/upload-artifact@master
+        with:
+          name:  $PACKAGE_NAME-package
+          path: "$ARTIFACTS_PATH/dist/$PACKAGE_NAME-*.whl"
+
+  test-unit:
+    name: Run unit tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Download wheel package
+        uses: actions/download-artifact@v3
+        with:
+          name: $PACKAGE_NAME-package
+          path: dist/
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.10
+      - name: Run unit tests
+        run: |
+          pip install poetry==$POETRY_VERSION
+          poetry install --no-root
+          source `poetry env info --path`/bin/activate
+          pytest tests
