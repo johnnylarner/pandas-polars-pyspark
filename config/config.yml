@@ -3,24 +3,3 @@ logging:
   enabled: true
   format: "%(asctime)s.%(msecs)03d [%(levelname)s]: %(message)s"
   level: "INFO"
-
-schemas:
-  sales: 
-    sale_id: integer
-    sale_timestamp: integer
-    sale_value: integer
-    sale_currency: string
-    product_id: integer
-    seller_id: integer
-    customer_id: integer
-
-  products:
-    product_id: integer
-    name: string
-    unit_price_usd: integer 
-    available_since: integer
-    available_until: integer
-    category: string
-    is_on_sale: boolean
-    on_sale_from: integer
-    percent_reduction: integer

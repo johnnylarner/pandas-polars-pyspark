@@ -15,7 +15,7 @@ def main():
     config = load_config(CONFIG_PATH)
     logger = logging_setup(config)
 
-    parquet_files = [p for p in DATA_PATH.glob("*.parquet") if p.is_file()]
+    parquet_files = list(DATA_PATH.glob("*.parquet"))
     logger.info("Found %d parquet files", len(parquet_files))
 
     unique_years = {extract_year(file) for file in parquet_files}
