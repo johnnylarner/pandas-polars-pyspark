@@ -49,7 +49,7 @@ jobs:
         uses: actions/upload-artifact@master
         with:
           name:  ${{ env.PACKAGE_NAME }}-package
-          path: "${{ env.ARTIFACTS_PATH }}/dist/${{ env.PACKAGE_NAME }}-*.whl"
+          path: "${{ env.ARTIFACTS_PATH }}/${{ env.PACKAGE_NAME }}-*.whl"
 
   test-unit:
     name: Run unit tests
