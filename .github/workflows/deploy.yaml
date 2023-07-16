@@ -69,6 +69,6 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
       - name: Run unit tests
         run: |
-          pip install poetry==$POETRY_VERSION
-          poetry install
+          pip install dist/$PACKAGE_NAME-*.whl poetry==$POETRY_VERSION
+          poetry install --only dev-dependencies
           poetry run pytest tests
