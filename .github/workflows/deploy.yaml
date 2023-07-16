@@ -31,6 +31,8 @@ jobs:
         run: |
           pip install poetry==$POETRY_VERSION
           poetry config cache-dir $POETRY_CACHE_DIR
+          poetry install --no-root
+          source `poetry env info --path`/bin/activate
 
       - name: Run hooks
         run: |
