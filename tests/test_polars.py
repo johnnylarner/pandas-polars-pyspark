@@ -188,14 +188,16 @@ def test_calc_cash_journeys_per_pickup():
     trip_df = pl.DataFrame(
         {
             "payment_type": ["CASH", "CREDIT", "CASH", "NO_CHARGE", "CASH"],
-            "pulocationid": ["1", "2", "1", "3", "4"],
+            "pulocationid_borough": ["1", "2", "1", "3", "1"],
+            "pulocationid_zone": ["1", "1", "1", "3", "4"],
         }
     )
     actual_df = calc_cash_journeys_per_pickup(trip_df)
 
     expected_df = pl.DataFrame(
         {
-            "pulocationid": ["1", "4"],
+            "pulocationid_borough": ["1", "1"],
+            "pulocationid_zone": ["1", "4"],
             "num_cash_journeys": [2, 1],
         }
     )
@@ -223,7 +225,7 @@ def test_calc_highest_tolls_per_route(locations):
         ],
     }
 
-    trip_df = pl.DataFrame({**locations_with_tolls})
+    trip_df = pl.DataFrame(locations_with_tolls)
     actual_df = calc_highest_tolls_per_route(trip_df)
     actual_df = actual_df.select("tolls_amount_sum")
 

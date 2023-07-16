@@ -5,7 +5,6 @@ from ppp.polars import (
     calc_cash_journeys_per_pickup,
     calc_highest_tolls_per_route,
     calc_result_most_frequent_three_routes,
-    update_payment_type_as_string_values,
 )
 from ppp.util import CONFIG_PATH, DATA_PATH, load_config, logging_setup
 

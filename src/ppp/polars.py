@@ -105,9 +105,11 @@ def calc_cash_journeys_per_pickup(trip_df: DataFrame) -> DataFrame:
     location.
     """
     is_cash_payment = pl.col("payment_type") == PaymentType.CASH.name
+    pickup_composite_key = ["pulocationid_borough", "pulocationid_zone"]
+
     cash_journeys_df = trip_df.filter(is_cash_payment)
     return (
-        cash_journeys_df.groupby("pulocationid")
+        cash_journeys_df.groupby(*pickup_composite_key)
         .agg(pl.count().cast(pl.Int64).alias("num_cash_journeys"))
         .sort(by="num_cash_journeys", descending=True)
     )
