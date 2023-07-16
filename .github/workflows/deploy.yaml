@@ -43,7 +43,7 @@ jobs:
           pip install poetry==$POETRY_VERSION
           poetry build -f wheel
           mv dist/ $ARTIFACTS_PATH
-          ls $ARTIFACTS_PATH/dist
+          ls $ARTIFACTS_PATH
 
       - name: Upload wheel as artifact
         uses: actions/upload-artifact@master
