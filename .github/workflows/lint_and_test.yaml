@@ -27,12 +27,15 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
+      - name: Install poetry
+        run: |
+          pip install poetry==$POETRY_VERSION
+
       - name: Run hooks
         run: |
             poetry run pre-commit run --all-files
 
       - name: Run unit tests
         run: |
-          pip install poetry==$POETRY_VERSION
           poetry install
           poetry run pytest tests
