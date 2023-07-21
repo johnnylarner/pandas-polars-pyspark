@@ -1,0 +1,38 @@
+name: Deploy my package
+
+on:
+  push:
+    branches:
+      - "main"
+      - "features/**"
+      - "improvements/**"
+      - "bug-fixes/**"
+
+env:
+  PACKAGE_NAME: ppp
+  ARTIFACTS_PATH: artifacts
+  PYTHON_VERSION: 3.10.12
+  POETRY_VERSION: 1.4.2
+  POETRY_CACHE_DIR: $CI_PROJECT_DIR/.cache/poetry
+
+jobs:
+  lint-and-test:
+    name: Build package
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Run hooks
+        run: |
+            poetry run pre-commit run --all-files
+
+      - name: Run unit tests
+        run: |
+          pip install poetry==$POETRY_VERSION
+          poetry install
+          poetry run pytest tests
