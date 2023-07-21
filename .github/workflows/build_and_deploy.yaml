@@ -1,0 +1,75 @@
+name: Build and test PPP package
+
+on:
+  workflow_dispatch
+
+env:
+  PACKAGE_NAME: ppp
+  ARTIFACTS_PATH: artifacts
+  TF_DIR: terraform
+  PYTHON_VERSION: 3.10.12
+  POETRY_VERSION: 1.4.2
+  POETRY_CACHE_DIR: $CI_PROJECT_DIR/.cache/poetry
+
+jobs:
+  build_terraform:
+    name: Build terraform
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+
+      - name: Terraform init
+        run: terraform init
+        working-directory: ${{ env.TF_DIR }}
+
+      - name: Terraform validate
+        run: terraform validate
+        working-directory: ${{ env.TF_DIR }}
+
+      - name: Terraform plan
+        run: terraform plan
+        working-directory: ${{ env.TF_DIR }}
+
+
+      - name: Terraform apply
+        run: terraform apply -auto-approve
+        working-directory: ${{ env.TF_DIR }}
+
+
+  build_package:
+    name: Build package
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install poetry
+        run: |
+          pip install poetry==$POETRY_VERSION
+          poetry config cache-dir $POETRY_CACHE_DIR
+          poetry install --no-root
+          source `poetry env info --path`/bin/activate
+
+      - name: Build wheel
+        run: |
+          pip install poetry==$POETRY_VERSION
+          poetry build -f wheel
+          mv dist/ $ARTIFACTS_PATH
+          ls $ARTIFACTS_PATH
+
+      - name: Upload wheel as artifact
+        uses: actions/upload-artifact@master
+        with:
+          name:  ${{ env.PACKAGE_NAME }}-package
+          path: "${{ env.ARTIFACTS_PATH }}/${{ env.PACKAGE_NAME }}-*.whl"
+
+      - name: Build docker image
+        run: |
+          docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA .
