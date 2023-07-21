@@ -4,19 +4,27 @@ on:
   workflow_dispatch
 
 env:
-  PACKAGE_NAME: ppp
   ARTIFACTS_PATH: artifacts
+  AWS_DEFAULT_REGION: eu-west-1
   TF_DIR: terraform
-  PYTHON_VERSION: 3.10.12
+  PACKAGE_NAME: ppp
   POETRY_VERSION: 1.4.2
   POETRY_CACHE_DIR: $CI_PROJECT_DIR/.cache/poetry
+  PYTHON_VERSION: 3.10.12
 
 jobs:
   build_terraform:
     name: Build terraform
     runs-on: ubuntu-latest
 
+
     steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ vars.AWS_DEFAULT_ROLE }}
+          aws-region: ${{ env.AWS_DEFAULT_REGION }}
+
       - uses: actions/checkout@v3
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
