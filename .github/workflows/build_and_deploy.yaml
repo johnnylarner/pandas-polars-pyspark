@@ -12,6 +12,10 @@ env:
   POETRY_CACHE_DIR: $CI_PROJECT_DIR/.cache/poetry
   PYTHON_VERSION: 3.10.12
 
+permissions:
+  id-token: write
+  contents: write
+
 jobs:
   build_terraform:
     name: Build terraform
@@ -19,13 +23,14 @@ jobs:
 
 
     steps:
+      - uses: actions/checkout@v3
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
           role-to-assume: arn:aws:iam::494719138554:role/github-actions
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
 
-      - uses: actions/checkout@v3
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
 
@@ -50,6 +55,7 @@ jobs:
   build_package:
     name: Build package
     runs-on: ubuntu-latest
+    needs: build_terraform
 
     steps:
       - uses: actions/checkout@v3
