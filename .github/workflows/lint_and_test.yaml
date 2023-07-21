@@ -30,6 +30,7 @@ jobs:
       - name: Install poetry
         run: |
           pip install poetry==$POETRY_VERSION
+          poetry install
 
       - name: Run hooks
         run: |
@@ -37,5 +38,4 @@ jobs:
 
       - name: Run unit tests
         run: |
-          poetry install
           poetry run pytest tests
