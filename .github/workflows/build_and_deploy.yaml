@@ -22,7 +22,7 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          role-to-assume: ${{ vars.AWS_DEFAULT_ROLE }}
+          role-to-assume: arn:aws:iam::494719138554:role/github-actions
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
 
       - uses: actions/checkout@v3
