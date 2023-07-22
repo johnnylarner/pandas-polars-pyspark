@@ -15,9 +15,9 @@ data "aws_vpc" "default" {
   default = true
 }
 
-data "aws_subnet_ids"  "all_default_subnets" {
-  vpc_id =  data.aws_vpc.default.subnet_ids
-  }
+data "aws_subnet" "default" {
+  vpc_id     = data.aws_vpc.default.id
+}
 
 module storage {
   source = "./storage"
@@ -25,4 +25,5 @@ module storage {
 
 module compute {
   source = "./compute"
+  vpc_id = data.aws_vpc.default.id
 }
