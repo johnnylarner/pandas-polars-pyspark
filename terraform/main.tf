@@ -21,5 +21,4 @@ resource "aws_s3_bucket" "my_bucket" {
 
 resource "aws_ecr_repository" "my_repository" {
   name = "pandas-polars-pyspark"
-  region = "eu-west-1"
 }
