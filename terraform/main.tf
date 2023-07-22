@@ -10,15 +10,19 @@ provider "aws" {
   region = "eu-west-1"
 }
 
-resource "aws_s3_bucket" "my_bucket" {
-  bucket = "pandas-polars-pyspark"
-  acl    = "private"
 
-  tags = {
-    project        = "ppp"
-  }
+data "aws_vpc" "default" {
+  default = true
 }
 
-resource "aws_ecr_repository" "my_repository" {
-  name = "pandas-polars-pyspark"
+data "aws_subnet_ids"  "all_default_subnets" {
+  vpc_id =  data.aws_vpc.default.subnet_ids
+  }
+
+module storage {
+  source = "./storage"
+}
+
+module compute {
+  source = "./compute"
 }
