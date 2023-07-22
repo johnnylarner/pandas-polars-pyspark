@@ -64,6 +64,12 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ vars.AWS_WORKFLOW_ROLE }}
+          aws-region: ${{ env.AWS_DEFAULT_REGION }}
+
       - name: Install poetry
         run: |
           pip install poetry==$POETRY_VERSION
