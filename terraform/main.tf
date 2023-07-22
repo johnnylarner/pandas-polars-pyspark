@@ -10,17 +10,9 @@ provider "aws" {
   region = "eu-west-1"
 }
 
-
-data "aws_vpc" "default" {
-  default = true
+resource "aws_vpc" "default" {
 }
 
-data "aws_subnets" "example" {
-  filter {
-    name   = "vpc-id"
-    values = [data.aws_vpc.default.id]
-  }
-}
 
 module storage {
   source = "./storage"
@@ -28,5 +20,5 @@ module storage {
 
 module compute {
   source = "./compute"
-  vpc_id = data.aws_vpc.default.id
+  vpc_id = aws_vpc.default.id
 }
