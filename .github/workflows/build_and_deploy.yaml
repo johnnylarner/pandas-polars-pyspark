@@ -92,7 +92,7 @@ jobs:
           ACCOUNT_ID: ${{ secrets.ACCOUNT_ID }}
         run: |
           aws ecr get-login-password \
-              --region ${REGION} \
+              --region ${AWS_DEFAULT_REGION} \
           | docker login \
               --username AWS \
               --password-stdin ${ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com
