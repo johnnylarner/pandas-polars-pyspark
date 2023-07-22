@@ -73,16 +73,13 @@ jobs:
 
       - name: Build wheel
         run: |
-          pip install poetry==$POETRY_VERSION
           poetry build -f wheel
-          mv dist/ $ARTIFACTS_PATH
-          ls $ARTIFACTS_PATH
 
       - name: Upload wheel as artifact
         uses: actions/upload-artifact@master
         with:
           name:  ${{ env.PACKAGE_NAME }}-package
-          path: "${{ env.ARTIFACTS_PATH }}/${{ env.PACKAGE_NAME }}-*.whl"
+          path: "dist/${{ env.PACKAGE_NAME }}-*.whl"
 
       - name: Build docker image
         env:
