@@ -18,3 +18,7 @@ resource "aws_s3_bucket" "my_bucket" {
     project        = "ppp"
   }
 }
+
+resource "aws_ecr_repository" "my_repository" {
+  name = "pandas-polars-pyspark"
+}

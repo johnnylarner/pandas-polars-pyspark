@@ -6,6 +6,7 @@ on:
 env:
   ARTIFACTS_PATH: artifacts
   AWS_DEFAULT_REGION: eu-west-1
+  ECR_REPO: pandas-polars-pyspark
   TF_DIR: terraform
   PACKAGE_NAME: ppp
   POETRY_VERSION: 1.4.2
@@ -20,7 +21,6 @@ jobs:
   build_terraform:
     name: Build terraform
     runs-on: ubuntu-latest
-
 
     steps:
       - uses: actions/checkout@v3
@@ -86,4 +86,15 @@ jobs:
 
       - name: Build docker image
         run: |
-          docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA .
+          # ...terraform commands
+          docker build -t ${ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${ECR_REPO} .
+
+      - name: Push docker image
+        run: |
+          aws ecr get-login-password \
+              --region ${REGION} \
+          | docker login \
+              --username AWS \
+              --password-stdin ${ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com
+
+          docker push ${ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${ECR_REPO}
