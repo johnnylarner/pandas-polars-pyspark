@@ -1,4 +1,4 @@
-name: Deploy my package
+name: Build and test app
 
 on:
   push:
