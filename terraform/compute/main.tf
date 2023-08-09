@@ -25,18 +25,3 @@ resource "aws_iam_role_policy_attachment" "policy_attachment" {
   role       = aws_iam_role.batch_role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSBatchServiceRole"
 }
-# Security Group for batch processing
-resource "aws_security_group" "batch_security_group" {
-  name        = "batch_security_group"
-  description = "AWS Batch Security Group for batch jobs"
-  vpc_id      = var.vpc_id
-egress {
-    from_port   = 0
-    to_port     = 65535
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-tags = {
-    project = "ppp"
-  }
-}
