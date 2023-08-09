@@ -1,4 +1,4 @@
-name: Build and test PPP package
+name: Build infra and deploy app
 
 on:
   workflow_dispatch
