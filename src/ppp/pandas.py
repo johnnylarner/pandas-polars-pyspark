@@ -79,3 +79,36 @@ def calc_result_most_frequent_three_routes(trip_df: DataFrame) -> DataFrame:
     )
 
     return trips_count.head(3)
+
+
+def calc_cash_journeys_per_pickup(trip_df: DataFrame) -> DataFrame:
+    """Returns a pandas DataFrame containing
+    the number of cash journeys per pickup
+    location.
+    """
+
+    is_cash_payment = trip_df["payment_type"] == "CASH"
+    pickup_composite_key = ["pulocationid_borough", "pulocationid_zone"]
+
+    trips_paid_cash_df = trip_df[is_cash_payment]
+
+    return (
+        trips_paid_cash_df[pickup_composite_key]
+        .groupby(pickup_composite_key, as_index=False)
+        .size()
+        .rename(columns={"size": "num_cash_journeys"})
+        .sort_values("num_cash_journeys", ascending=False)
+    )
+
+
+def calc_highest_tolls_per_route(trip_df: DataFrame) -> DataFrame:
+    """Returns a pandas DataFrame containing
+    the highest total tolls per route.
+    """
+
+    return (
+        trip_df.groupby(ROUTE_COLUMNS)
+        .agg(tolls_amount_sum=("tolls_amount", "sum"))
+        .reset_index()
+        .sort_values("tolls_amount_sum", ascending=False)
+    )
