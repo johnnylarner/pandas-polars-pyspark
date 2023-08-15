@@ -10,71 +10,7 @@ from ppp.polars import (
     update_payment_type_as_string_values,
 )
 
-
-@pytest.fixture
-def locations():
-    return {
-        "pulocationid_borough": [
-            "Manhattan",
-            "Manhattan",
-            "Manhattan",
-            "Queens",
-            "Queens",
-            "Bronx",
-            "Bronx",
-            "Brooklyn",
-            "Brooklyn",
-            "Brooklyn",
-            "Unknown",
-            "Unknown",
-            "Unknown",
-        ],
-        "pulocationid_zone": [
-            "Upper East Side",
-            "Upper East Side",
-            "Upper East Side",
-            "Astoria",
-            "Hunters Point",
-            "Riverdale",
-            "Riverdale",
-            "Williamsburg",
-            "Williamsburg",
-            "Bushwick",
-            "Unknown",
-            "Unknown",
-            "Unknown",
-        ],
-        "dolocationid_borough": [
-            "Queens",
-            "Queens",
-            "Queens",
-            "Manhattan",
-            "Manhattan",
-            "Bronx",
-            "Bronx",
-            "Bronx",
-            "Bronx",
-            "Bronx",
-            "Unknown",
-            "Unknown",
-            "Unknown",
-        ],
-        "dolocationid_zone": [
-            "Astoria",
-            "Astoria",
-            "Astoria",
-            "Upper East Side",
-            "Lower East Side",
-            "Fordham",
-            "Fordham",
-            "Riverdale",
-            "Riverdale",
-            "Riverdale",
-            "Unknown",
-            "Unknown",
-            "Unknown",
-        ],
-    }
+from tests.df_fixtures import locations, top3_locations
 
 
 def assert_pl_frame_equal(
@@ -156,31 +92,7 @@ def test_calc_result_most_frequent_three_routes(locations):
     trip_df = pl.DataFrame(locations)
     actual_df = calc_result_most_frequent_three_routes(trip_df)
 
-    expected_df = pl.DataFrame(
-        {
-            "pulocationid_borough": [
-                "Manhattan",
-                "Bronx",
-                "Brooklyn",
-            ],
-            "pulocationid_zone": [
-                "Upper East Side",
-                "Riverdale",
-                "Williamsburg",
-            ],
-            "dolocationid_borough": [
-                "Queens",
-                "Bronx",
-                "Bronx",
-            ],
-            "dolocationid_zone": [
-                "Astoria",
-                "Fordham",
-                "Riverdale",
-            ],
-            "num_trips": [3, 2, 2],
-        }
-    )
+    expected_df = pl.DataFrame(top3_locations)
     assert_pl_frame_equal(actual_df, expected_df, check_row_order=False)
 
 

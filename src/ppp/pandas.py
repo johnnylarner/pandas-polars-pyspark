@@ -17,12 +17,12 @@ class PaymentType(Enum):
     VOIDED_TRIP = 6
 
 
-# ROUTE_COLUMNS = [
-#     "pulocationid_borough",
-#     "pulocationid_zone",
-#     "dolocationid_borough",
-#     "dolocationid_zone",
-# ]
+ROUTE_COLUMNS = [
+    "pulocationid_borough",
+    "pulocationid_zone",
+    "dolocationid_borough",
+    "dolocationid_zone",
+]
 
 
 def add_features(trip_df: DataFrame, zone_df: DataFrame) -> tuple[DataFrame, DataFrame]:
@@ -52,10 +52,10 @@ def update_payment_type_as_string_values(trip_df: DataFrame) -> DataFrame:
     the trip_df DataFrame with the payment_type
     column updated to be string values.
     """
+    # TODO: replace is slow, could be replaced with
 
-    return trip_df.payment_type.replace(
-        {i.value: i.name for i in PaymentType}
-    ).to_frame()
+    map_dict = {i.value: i.name for i in PaymentType}
+    return trip_df.replace({"payment_type": map_dict})
 
 
 def add_borough_and_zone(
@@ -78,5 +78,25 @@ def add_borough_and_zone(
     ).drop(columns=location_col_zone_id)
 
 
-def calc_result_most_frequent_three_routes(trip_df: DataFrame):
-    __import__("IPython").embed()
+def calc_result_most_frequent_three_routes(trip_df: DataFrame) -> DataFrame:
+    """Returns a pandas DataFrame containing
+    most frequently routes including the
+    number of times each route was travelled.
+    """
+
+    start_and_stop_of_trip_is_known = (trip_df.pulocationid_borough != "Unknown") & (
+        trip_df.dolocationid_borough != "Unknown"
+    )
+    trips_with_known_start_stop = trip_df[start_and_stop_of_trip_is_known].filter(
+        ROUTE_COLUMNS
+    )
+    trips_with_known_start_stop.shape
+
+    trips_count = (
+        trips_with_known_start_stop.groupby(ROUTE_COLUMNS)
+        .size()
+        .reset_index(name="num_trips")
+        .sort_values("num_trips", ascending=False)
+    )
+
+    return trips_count.head(3)

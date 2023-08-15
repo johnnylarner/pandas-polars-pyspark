@@ -5,7 +5,7 @@ from ppp.pandas import (
     add_features,
     # calc_cash_journeys_per_pickup,
     # calc_highest_tolls_per_route,
-    # calc_result_most_frequent_three_routes,
+    calc_result_most_frequent_three_routes,
 )
 from ppp.util import CONFIG_PATH, DATA_PATH, load_config, logging_setup
 
@@ -37,16 +37,14 @@ def main():
     # logger.info("df schema after add_features: %s", df.info())
     # logger.info("df preview after add_features: %s", df.head(5))
 
-    # top_three_routes = calc_result_most_frequent_three_routes(df)
-    # logger.info("top_three_routes: %s", top_three_routes)
+    top_three_routes = calc_result_most_frequent_three_routes(df)
+    logger.info("top_three_routes: %s", top_three_routes)
 
     # cash_journeys = calc_cash_journeys_per_pickup(df)
     # logger.info("cash_journeys: %s", cash_journeys)
 
     # tolls_per_route = calc_highest_tolls_per_route(df)
     # logger.info("tolls per route: %s", tolls_per_route)
-
-    # __import__("IPython").embed()
 
 
 if __name__ == "__main__":

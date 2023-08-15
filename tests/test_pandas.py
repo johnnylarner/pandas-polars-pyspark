@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 import pytest
 from pandas.testing import assert_frame_equal
@@ -7,7 +8,10 @@ from ppp.pandas import (
     rename_columns_as_lowercase,
     update_payment_type_as_string_values,
     add_borough_and_zone,
+    calc_result_most_frequent_three_routes,
 )
+
+from tests.df_fixtures import locations, top3_locations
 
 
 def test_rename_columns_as_lowercase():
@@ -47,6 +51,7 @@ def test_add_borough_and_zone():
             "dolocationid": [1, 2, 3, 4, 5],
         }
     )
+
     zone_df = pd.DataFrame(
         {
             "locationid": [1, 2, 3, 4, 5],
@@ -56,6 +61,7 @@ def test_add_borough_and_zone():
     )
 
     actual_df = add_borough_and_zone(trip_df, zone_df, "pulocationid")
+
     expected_df = pd.DataFrame(
         {
             "pulocationid": [1, 2, 3, 4, 5],
@@ -76,4 +82,15 @@ def test_add_borough_and_zone():
             ],
         }
     )
+
     assert_frame_equal(actual_df, expected_df)
+
+
+def test_calc_result_most_frequent_three_routes(locations, top3_locations):
+    trip_df = pd.DataFrame(locations)
+
+    actual_df = calc_result_most_frequent_three_routes(trip_df)
+
+    expected_df = pd.DataFrame(top3_locations)
+
+    assert np.array_equal(actual_df.values, expected_df.values)
