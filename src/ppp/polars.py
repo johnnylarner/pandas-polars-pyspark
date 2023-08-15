@@ -1,28 +1,7 @@
-from enum import Enum
-
 import polars as pl
 from polars import DataFrame
 
-
-class PaymentType(Enum):
-    """Enum representing the payment types
-    for the NYC Taxi dataset.
-    """
-
-    CREDIT_CARD = 1
-    CASH = 2
-    NO_CHARGE = 3
-    DISPUTE = 4
-    UNKNOWN = 5
-    VOIDED_TRIP = 6
-
-
-ROUTE_COLUMNS = [
-    "pulocationid_borough",
-    "pulocationid_zone",
-    "dolocationid_borough",
-    "dolocationid_zone",
-]
+from ppp.common import PaymentType, ROUTE_COLUMNS
 
 
 def add_features(trip_df: DataFrame, zone_df: DataFrame) -> DataFrame:

@@ -1,28 +1,7 @@
 import pandas as pd
 from pandas import DataFrame
-from enum import Enum
 
-
-# TODO: would be easier to use a dictionary directly
-class PaymentType(Enum):
-    """Enum representing the payment types
-    for the NYC Taxi dataset.
-    """
-
-    CREDIT_CARD = 1
-    CASH = 2
-    NO_CHARGE = 3
-    DISPUTE = 4
-    UNKNOWN = 5
-    VOIDED_TRIP = 6
-
-
-ROUTE_COLUMNS = [
-    "pulocationid_borough",
-    "pulocationid_zone",
-    "dolocationid_borough",
-    "dolocationid_zone",
-]
+from ppp.common import PaymentType, ROUTE_COLUMNS
 
 
 def add_features(trip_df: DataFrame, zone_df: DataFrame) -> tuple[DataFrame, DataFrame]:
@@ -52,7 +31,7 @@ def update_payment_type_as_string_values(trip_df: DataFrame) -> DataFrame:
     the trip_df DataFrame with the payment_type
     column updated to be string values.
     """
-    # TODO: replace is slow, could be replaced with
+    # TODO: replace is slow, could be replaced with map
 
     map_dict = {i.value: i.name for i in PaymentType}
     return trip_df.replace({"payment_type": map_dict})

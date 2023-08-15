@@ -88,7 +88,7 @@ def test_add_borough_and_zone():
     assert_frame_equal(actual_df, expected_df)
 
 
-def test_calc_result_most_frequent_three_routes(locations):
+def test_calc_result_most_frequent_three_routes(locations, top3_locations):
     trip_df = pl.DataFrame(locations)
     actual_df = calc_result_most_frequent_three_routes(trip_df)
 
