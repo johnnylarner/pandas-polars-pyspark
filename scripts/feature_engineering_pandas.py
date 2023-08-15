@@ -1,0 +1,55 @@
+import os, psutil
+import pandas as pd
+
+from ppp.pandas import (
+    add_features,
+    # calc_cash_journeys_per_pickup,
+    # calc_highest_tolls_per_route,
+    # calc_result_most_frequent_three_routes,
+)
+from ppp.util import CONFIG_PATH, DATA_PATH, load_config, logging_setup
+
+
+def main():
+    config = load_config(CONFIG_PATH)
+    logger = logging_setup(config)
+
+    parquet_dir = DATA_PATH / "year=2011" / "yellow_tripdata_2011-01.parquet"
+
+    # MB resident memory
+    print("# resident memory before reading parquet [MB]")
+    print(psutil.Process(os.getpid()).memory_info().rss / (1024 * 1024))
+
+    df = pd.read_parquet(parquet_dir)
+    zone_df = pd.read_csv(DATA_PATH / "taxi+_zone_lookup.csv")
+
+    # MB resident memory
+    print("# resident memory after reading parquet [MB]")
+    print(psutil.Process(os.getpid()).memory_info().rss / (1024 * 1024))
+
+    # logger.info("df schema: %s", df.info())
+    # logger.info("df preview: %s", df.head(5))
+
+    df = add_features(df, zone_df)
+    # MB resident memory
+    print("# resident memory after add_features [MB]")
+    print(psutil.Process(os.getpid()).memory_info().rss / (1024 * 1024))
+    # logger.info("df schema after add_features: %s", df.info())
+    # logger.info("df preview after add_features: %s", df.head(5))
+
+    # __import__("IPython").embed()
+
+    # top_three_routes = calc_result_most_frequent_three_routes(df)
+    # logger.info("top_three_routes: %s", top_three_routes)
+
+    # cash_journeys = calc_cash_journeys_per_pickup(df)
+    # logger.info("cash_journeys: %s", cash_journeys)
+
+    # tolls_per_route = calc_highest_tolls_per_route(df)
+    # logger.info("tolls per route: %s", tolls_per_route)
+
+    # __import__("IPython").embed()
+
+
+if __name__ == "__main__":
+    main()
