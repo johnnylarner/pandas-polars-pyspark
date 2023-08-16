@@ -86,7 +86,7 @@ def calc_cash_journeys_per_pickup(trip_df: DataFrame) -> DataFrame:
     location.
     """
 
-    is_cash_payment = trip_df["payment_type"] == "CASH"
+    is_cash_payment = trip_df["payment_type"] == PaymentType.CASH.name
     pickup_composite_key = ["pulocationid_borough", "pulocationid_zone"]
 
     trips_paid_cash_df = trip_df[is_cash_payment]
