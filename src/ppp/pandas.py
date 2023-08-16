@@ -69,7 +69,6 @@ def calc_result_most_frequent_three_routes(trip_df: DataFrame) -> DataFrame:
     trips_with_known_start_stop = trip_df[start_and_stop_of_trip_is_known].filter(
         ROUTE_COLUMNS
     )
-    trips_with_known_start_stop.shape
 
     trips_count = (
         trips_with_known_start_stop.groupby(ROUTE_COLUMNS)
