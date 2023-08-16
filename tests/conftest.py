@@ -1,7 +1,7 @@
 import pytest
 
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def locations():
     return {
         "pulocationid_borough": [
@@ -67,7 +67,7 @@ def locations():
     }
 
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def top3_locations():
     return {
         "pulocationid_borough": [

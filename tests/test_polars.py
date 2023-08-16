@@ -10,8 +10,6 @@ from ppp.polars import (
     update_payment_type_as_string_values,
 )
 
-from tests.df_fixtures import locations, top3_locations
-
 
 def assert_pl_frame_equal(
     actual_df, expected_df, check_row_order=False, **kwargs

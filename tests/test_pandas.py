@@ -13,8 +13,6 @@ from ppp.pandas import (
     calc_highest_tolls_per_route,
 )
 
-from tests.df_fixtures import locations, top3_locations
-
 
 def test_rename_columns_as_lowercase():
     df = pd.DataFrame({"A": [1, 2], "B": [3, 4]})
