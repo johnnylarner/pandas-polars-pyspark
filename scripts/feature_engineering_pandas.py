@@ -30,7 +30,7 @@ def main():
     logger.info("df preview: %s", df.head(5))
     logger.info("resident memory after reading parquet [MB]: %s", get_rss())
 
-    df, zone_df = add_features(df, zone_df)
+    df = add_features(df, zone_df)
 
     logger.info("df schema after add_features: %s", df.info())
     logger.info("df preview after add_features: %s", df.head(5))

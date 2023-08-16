@@ -4,7 +4,7 @@ from pandas import DataFrame
 from ppp.common import PaymentType, ROUTE_COLUMNS
 
 
-def add_features(trip_df: DataFrame, zone_df: DataFrame) -> tuple[DataFrame, DataFrame]:
+def add_features(trip_df: DataFrame, zone_df: DataFrame) -> DataFrame:
     """Returns a pandas DataFrame containing
     all the features derived from NYC
     Taxi dataset to answer all business questions.
@@ -14,7 +14,7 @@ def add_features(trip_df: DataFrame, zone_df: DataFrame) -> tuple[DataFrame, Dat
     trip_df = update_payment_type_as_string_values(trip_df)
     trip_df = add_borough_and_zone(trip_df, zone_df, "pulocationid")
     trip_df = add_borough_and_zone(trip_df, zone_df, "dolocationid")
-    return trip_df, zone_df
+    return trip_df
 
 
 def rename_columns_as_lowercase(df: DataFrame) -> DataFrame:
