@@ -31,7 +31,7 @@ def update_payment_type_as_string_values(trip_df: DataFrame) -> DataFrame:
     column updated to be string values.
     """
     return trip_df.with_columns(
-        pl.col("payment_type").map_dict({i: PaymentType(i).name for i in range(1, 7)})
+        pl.col("payment_type").map_dict({i.value: i.name for i in PaymentType})
     )
 
 
