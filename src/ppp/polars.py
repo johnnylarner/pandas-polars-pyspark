@@ -4,7 +4,7 @@ from polars import DataFrame
 from ppp.common import PaymentType, ROUTE_COLUMNS
 
 
-def add_features(trip_df: DataFrame, zone_df: DataFrame) -> DataFrame:
+def add_features(trip_df: DataFrame, zone_df: DataFrame) -> tuple[DataFrame, DataFrame]:
     """Returns a polars DataFrame containing
     all the features required for the NYC
     Taxi dataset.
@@ -14,7 +14,7 @@ def add_features(trip_df: DataFrame, zone_df: DataFrame) -> DataFrame:
     trip_df = update_payment_type_as_string_values(trip_df)
     trip_df = add_borough_and_zone(trip_df, zone_df, "pulocationid")
     trip_df = add_borough_and_zone(trip_df, zone_df, "dolocationid")
-    return trip_df
+    return trip_df, zone_df
 
 
 def rename_columns_as_lowercase(df: pl.DataFrame) -> pl.DataFrame:

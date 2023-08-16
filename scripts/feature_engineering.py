@@ -1,3 +1,4 @@
+import os, psutil
 import polars as pl
 
 from ppp.polars import (
@@ -9,9 +10,16 @@ from ppp.polars import (
 from ppp.util import CONFIG_PATH, DATA_PATH, load_config, logging_setup
 
 
+def get_rss() -> float:
+    psutil.Process(os.getpid()).memory_info().rss / (1024 * 1024)
+
+
 def main():
+    # set up logger
     config = load_config(CONFIG_PATH)
     logger = logging_setup(config)
+
+    logger.info("resident memory before reading parquet [MB]: %s", get_rss())
 
     parquet_dir = DATA_PATH / "year=2011" / "yellow_tripdata_2011-01.parquet"
 
@@ -20,10 +28,12 @@ def main():
 
     logger.info("df schema: %s", df.schema)
     logger.info("df preview: %s", df.head(5))
+    logger.info("resident memory after reading parquet [MB]: %s", get_rss())
 
-    df = add_features(df, zone_df)
+    df, zone_df = add_features(df, zone_df)
     logger.info("df schema after add_features: %s", df.schema)
     logger.info("df preview after add_features: %s", df.head(5))
+    logger.info("resident memory after calling add_features [MB]: %s", get_rss())
 
     top_three_routes = calc_result_most_frequent_three_routes(df)
     logger.info("top_three_routes: %s", top_three_routes)
