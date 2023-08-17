@@ -1,4 +1,5 @@
 import logging
+import os, psutil
 from pathlib import Path
 from typing import Any, Dict, Union
 
@@ -50,3 +51,8 @@ def logging_setup(config: Dict):
     logging.basicConfig(format=fmt, level=logging.WARNING)
     logger.setLevel(level)
     return logger
+
+
+def get_rss() -> float:
+    """calc RSS (resident set size) in bytes and transform it to Kilobyte"""
+    return psutil.Process(os.getpid()).memory_info().rss / (1024 * 1024)

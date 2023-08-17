@@ -1,37 +1,32 @@
-import polars as pl
+import numpy as np
+import pandas as pd
 import pytest
-from polars.testing import assert_frame_equal
+from pandas.testing import assert_frame_equal
 
-from ppp.polars import (
+from ppp.pandas import (
+    add_features,
+    rename_columns_as_lowercase,
+    update_payment_type_as_string_values,
     add_borough_and_zone,
+    calc_result_most_frequent_three_routes,
     calc_cash_journeys_per_pickup,
     calc_highest_tolls_per_route,
-    calc_result_most_frequent_three_routes,
-    update_payment_type_as_string_values,
 )
 
 
-def assert_pl_frame_equal(
-    actual_df, expected_df, check_row_order=False, **kwargs
-) -> None:
-    try:
-        assert_frame_equal(
-            actual_df, expected_df, check_row_order=check_row_order, **kwargs
-        )
-        assert True
-        return
-    except AssertionError as e:
-        print(
-            f"DataFrames are not equal. Expected:\n{expected_df},\nactual:\n{actual_df}"
-        )
-        raise e
+def test_rename_columns_as_lowercase():
+    df = pd.DataFrame({"A": [1, 2], "B": [3, 4]})
+    expected = pd.DataFrame({"a": [1, 2], "b": [3, 4]})
+
+    result = rename_columns_as_lowercase(df)
+
+    assert_frame_equal(result, expected)
 
 
 def test_update_payment_type_as_string_values():
-    trip_df = pl.DataFrame({"payment_type": [6, 5, 4, 3, 2, 1]})
-    actual_df = update_payment_type_as_string_values(trip_df)
+    df = pd.DataFrame({"payment_type": [6, 5, 4, 3, 2, 1]})
 
-    expected_df = pl.DataFrame(
+    expected_df = pd.DataFrame(
         {
             "payment_type": [
                 "VOIDED_TRIP",
@@ -44,17 +39,20 @@ def test_update_payment_type_as_string_values():
         }
     )
 
-    assert_pl_frame_equal(actual_df, expected_df)
+    actual_df = update_payment_type_as_string_values(df)
+
+    assert_frame_equal(actual_df, expected_df)
 
 
 def test_add_borough_and_zone():
-    trip_df = pl.DataFrame(
+    trip_df = pd.DataFrame(
         {
             "pulocationid": [1, 2, 3, 4, 5],
             "dolocationid": [1, 2, 3, 4, 5],
         }
     )
-    zone_df = pl.DataFrame(
+
+    zone_df = pd.DataFrame(
         {
             "locationid": [1, 2, 3, 4, 5],
             "borough": ["Manhattan", "Queens", "Bronx", "Brooklyn", "Staten Island"],
@@ -63,7 +61,8 @@ def test_add_borough_and_zone():
     )
 
     actual_df = add_borough_and_zone(trip_df, zone_df, "pulocationid")
-    expected_df = pl.DataFrame(
+
+    expected_df = pd.DataFrame(
         {
             "pulocationid": [1, 2, 3, 4, 5],
             "dolocationid": [1, 2, 3, 4, 5],
@@ -83,19 +82,22 @@ def test_add_borough_and_zone():
             ],
         }
     )
+
     assert_frame_equal(actual_df, expected_df)
 
 
 def test_calc_result_most_frequent_three_routes(locations, top3_locations):
-    trip_df = pl.DataFrame(locations)
+    trip_df = pd.DataFrame(locations)
+
     actual_df = calc_result_most_frequent_three_routes(trip_df)
 
-    expected_df = pl.DataFrame(top3_locations)
-    assert_pl_frame_equal(actual_df, expected_df, check_row_order=False)
+    expected_df = pd.DataFrame(top3_locations)
+
+    assert_frame_equal(actual_df, expected_df)
 
 
 def test_calc_cash_journeys_per_pickup():
-    trip_df = pl.DataFrame(
+    trip_df = pd.DataFrame(
         {
             "payment_type": ["CASH", "CREDIT", "CASH", "NO_CHARGE", "CASH"],
             "pulocationid_borough": ["1", "2", "1", "3", "1"],
@@ -104,7 +106,7 @@ def test_calc_cash_journeys_per_pickup():
     )
     actual_df = calc_cash_journeys_per_pickup(trip_df)
 
-    expected_df = pl.DataFrame(
+    expected_df = pd.DataFrame(
         {
             "pulocationid_borough": ["1", "1"],
             "pulocationid_zone": ["1", "4"],
@@ -112,7 +114,7 @@ def test_calc_cash_journeys_per_pickup():
         }
     )
 
-    assert_pl_frame_equal(actual_df, expected_df)
+    assert_frame_equal(actual_df, expected_df)
 
 
 def test_calc_highest_tolls_per_route(locations):
@@ -135,12 +137,14 @@ def test_calc_highest_tolls_per_route(locations):
         ],
     }
 
-    trip_df = pl.DataFrame(locations_with_tolls)
-    actual_df = calc_highest_tolls_per_route(trip_df)
-    actual_df = actual_df.select("tolls_amount_sum")
+    trip_df = pd.DataFrame(locations_with_tolls)
 
-    expected_df = pl.DataFrame(
+    actual_df = calc_highest_tolls_per_route(trip_df).filter(
+        items=["tolls_amount_sum"], axis=1
+    )
+
+    expected_df = pd.DataFrame(
         {"tolls_amount_sum": [3.0, 3.0, 2.0, 2.0, 1.0, 1.0, 1.0]}
     )
 
-    assert_pl_frame_equal(actual_df, expected_df)
+    assert_frame_equal(actual_df, expected_df)

@@ -1,6 +1,6 @@
-import polars as pl
+import pandas as pd
 
-from ppp.polars import (
+from ppp.pandas import (
     add_features,
     calc_cash_journeys_per_pickup,
     calc_highest_tolls_per_route,
@@ -18,15 +18,16 @@ def main():
 
     parquet_dir = DATA_PATH / "year=2011" / "yellow_tripdata_2011-01.parquet"
 
-    df = pl.read_parquet(parquet_dir)
-    zone_df = pl.read_csv(DATA_PATH / "taxi+_zone_lookup.csv")
+    df = pd.read_parquet(parquet_dir)
+    zone_df = pd.read_csv(DATA_PATH / "taxi+_zone_lookup.csv")
 
-    logger.info("df schema: %s", df.schema)
+    logger.info("df schema: %s", df.info())
     logger.info("df preview: %s", df.head(5))
     logger.info("resident memory after reading parquet [MB]: %s", get_rss())
 
     df = add_features(df, zone_df)
-    logger.info("df schema after add_features: %s", df.schema)
+
+    logger.info("df schema after add_features: %s", df.info())
     logger.info("df preview after add_features: %s", df.head(5))
     logger.info("resident memory after calling add_features [MB]: %s", get_rss())
 
