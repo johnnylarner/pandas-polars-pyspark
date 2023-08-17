@@ -1,4 +1,3 @@
-import os, psutil
 import pandas as pd
 
 from ppp.pandas import (
@@ -7,11 +6,7 @@ from ppp.pandas import (
     calc_highest_tolls_per_route,
     calc_result_most_frequent_three_routes,
 )
-from ppp.util import CONFIG_PATH, DATA_PATH, load_config, logging_setup
-
-
-def get_rss() -> float:
-    psutil.Process(os.getpid()).memory_info().rss / (1024 * 1024)
+from ppp.util import CONFIG_PATH, DATA_PATH, load_config, logging_setup, get_rss
 
 
 def main():
