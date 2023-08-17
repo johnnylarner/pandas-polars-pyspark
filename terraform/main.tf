@@ -55,34 +55,11 @@ resource "aws_security_group" "batch_security_group" {
 
 }
 
-# Create a security group for EFS mount targets
-resource "aws_security_group" "efs_security_group" {
-  name_prefix = "EFSSG-"
-  vpc_id      = aws_vpc.my_vpc.id
-
-  # Allow inbound traffic from the Batch security group
-  ingress {
-    from_port   = 2049
-    to_port     = 2049
-    protocol    = "tcp"
-    security_groups = [aws_security_group.batch_security_group.id]
-  }
-  tags = {
-      project = "ppp"
-    }
-
-}
 
 # Output the security group IDs
 output "batch_security_group_id" {
   value = aws_security_group.batch_security_group.id
 }
-
-output "efs_security_group_id" {
-  value = aws_security_group.efs_security_group.id
-}
-
-
 
 
 module storage {
@@ -91,4 +68,7 @@ module storage {
 
 module compute {
   source = "./compute"
+  ecr_repository_url = module.storage.ecr_repository_url
+  subnet_id = aws_subnet.my_subnet.id
+  security_group_id = aws_security_group.batch_security_group.id
 }
