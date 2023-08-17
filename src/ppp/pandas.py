@@ -75,6 +75,7 @@ def calc_result_most_frequent_three_routes(trip_df: DataFrame) -> DataFrame:
         .size()
         .reset_index(name="num_trips")
         .sort_values("num_trips", ascending=False)
+        .reset_index(drop=True)
     )
 
     return trips_count.head(3)
@@ -110,4 +111,5 @@ def calc_highest_tolls_per_route(trip_df: DataFrame) -> DataFrame:
         .agg(tolls_amount_sum=("tolls_amount", "sum"))
         .reset_index()
         .sort_values("tolls_amount_sum", ascending=False)
+        .reset_index(drop=True)
     )

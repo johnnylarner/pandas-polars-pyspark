@@ -93,7 +93,7 @@ def test_calc_result_most_frequent_three_routes(locations, top3_locations):
 
     expected_df = pd.DataFrame(top3_locations)
 
-    assert np.array_equal(actual_df.values, expected_df.values)
+    assert_frame_equal(actual_df, expected_df)
 
 
 def test_calc_cash_journeys_per_pickup():
@@ -138,11 +138,13 @@ def test_calc_highest_tolls_per_route(locations):
     }
 
     trip_df = pd.DataFrame(locations_with_tolls)
-    actual_df = calc_highest_tolls_per_route(trip_df)
-    actual_df = actual_df[["tolls_amount_sum"]]
+
+    actual_df = calc_highest_tolls_per_route(trip_df).filter(
+        items=["tolls_amount_sum"], axis=1
+    )
 
     expected_df = pd.DataFrame(
         {"tolls_amount_sum": [3.0, 3.0, 2.0, 2.0, 1.0, 1.0, 1.0]}
     )
 
-    assert np.array_equal(actual_df.values, expected_df.values)
+    assert_frame_equal(actual_df, expected_df)
