@@ -4,6 +4,10 @@ from polars import DataFrame
 from ppp.common import PaymentType, ROUTE_COLUMNS
 
 
+def hello_world() -> None:
+    return "hello world. this is polars."
+
+
 def add_features(trip_df: DataFrame, zone_df: DataFrame) -> DataFrame:
     """Returns a polars DataFrame containing
     all the features required for the NYC
