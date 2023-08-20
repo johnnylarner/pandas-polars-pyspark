@@ -1,5 +1,7 @@
+import importlib
 import logging
 import os, psutil
+import types
 from pathlib import Path
 from typing import Any, Dict, Union
 
@@ -56,3 +58,23 @@ def logging_setup(config: Dict):
 def get_rss() -> float:
     """calc RSS (resident set size) in bytes and transform it to Kilobyte"""
     return psutil.Process(os.getpid()).memory_info().rss / (1024 * 1024)
+
+
+def import_module(config: Dict) -> types.ModuleType:
+    """
+    Import a module.
+
+    Args:
+        module (str): The name of the module to import.
+
+    Returns:
+        module: The imported module.
+    """
+    module_config = config["module"]
+
+    try:
+        mod = importlib.import_module("ppp." + module_config["name"])
+
+        return mod
+    except ImportError:
+        raise ValueError(f"Module '{module_config['name']}' not found.")
