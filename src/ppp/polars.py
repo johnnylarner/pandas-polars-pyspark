@@ -4,10 +4,6 @@ from polars import DataFrame
 from ppp.common import PaymentType, ROUTE_COLUMNS
 
 
-def hello_world() -> None:
-    return "hello world. this is polars."
-
-
 def add_features(trip_df: DataFrame, zone_df: DataFrame) -> DataFrame:
     """Returns a polars DataFrame containing
     all the features required for the NYC
@@ -108,3 +104,18 @@ def calc_highest_tolls_per_route(trip_df: DataFrame) -> DataFrame:
         .agg(pl.col("tolls_amount").sum().suffix("_sum"))
         .sort(pl.col("tolls_amount_sum"), descending=True)
     )
+
+
+def read_parquet(parquet_path: str) -> DataFrame:
+    """Returns a polars DataFrame containing
+    the data from the parquet file at `parquet_path`.
+    """
+    return pl.read_parquet(parquet_path)
+
+
+# allows with mod \in ('polars', 'pandas') for
+# mod.read_parquet(parquet_path)
+
+# - any function from polars, pandas needs to be added in polars.py, pandas.py
+#   -> manual effort, "duplicated" code
+# + simple, readible

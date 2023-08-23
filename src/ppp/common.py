@@ -1,5 +1,13 @@
+import importlib
+import pandas as pd
+import polars as pl
+import types
+
 from enum import Enum
-from typing import Any
+from pathlib import Path
+from typing import Any, Dict
+
+from ppp.util import DATA_PATH
 
 
 class PaymentType(Enum):
@@ -15,6 +23,52 @@ class PaymentType(Enum):
     VOIDED_TRIP = 6
 
 
+SCHEMA_DICT = {
+    "polars": {
+        "VendorID": pl.Int64,
+        "tpep_pickup_datetime": pl.Datetime(time_unit="ns", time_zone=None),
+        "tpep_dropoff_datetime": pl.Datetime(time_unit="ns", time_zone=None),
+        "passenger_count": pl.Int64,
+        "trip_distance": pl.Float64,
+        "RatecodeID": pl.Int64,
+        "store_and_fwd_flag": pl.Utf8,
+        "PULocationID": pl.Int64,
+        "DOLocationID": pl.Int64,
+        "payment_type": pl.Int64,
+        "fare_amount": pl.Float64,
+        "extra": pl.Float64,
+        "mta_tax": pl.Float64,
+        "tip_amount": pl.Float64,
+        "tolls_amount": pl.Float64,
+        "improvement_surcharge": pl.Float64,
+        "total_amount": pl.Float64,
+        "congestion_surcharge": pl.Float64,
+        "airport_fee": pl.Float64,
+    },
+    "pandas": {
+        "VendorID": "int64",
+        "tpep_pickup_datetime": "datetime64[ns]",
+        "tpep_dropoff_datetime": "datetime64[ns]",
+        "passenger_count": "int64",
+        "trip_distance": "float64",
+        "RatecodeID": "int64",
+        "store_and_fwd_flag": "object",
+        "PULocationID": "int64",
+        "DOLocationID": "int64",
+        "payment_type": "int64",
+        "fare_amount": "float64",
+        "extra": "float64",
+        "mta_tax": "float64",
+        "tip_amount": "float64",
+        "tolls_amount": "float64",
+        "improvement_surcharge": "float64",
+        "total_amount": "float64",
+        "congestion_surcharge": "float64",
+        "airport_fee": "float64",
+    },
+}
+
+
 ROUTE_COLUMNS = [
     "pulocationid_borough",
     "pulocationid_zone",
@@ -23,47 +77,55 @@ ROUTE_COLUMNS = [
 ]
 
 
-def read_parquet_file(path: str, module: str) -> Any:
+def read_zone_lookup(config: Dict) -> Any:
     """
-    Read a Parquet file using the specified module's read_parquet method.
+    Read zone lookup data from a CSV file using the path and API specified in the config file.
 
     Args:
-        path (str): Path to the Parquet file.
-        module: The module (e.g., pandas, polars) that provides the read_parquet method.
+        config (Dict): Configuration dictionary with "path" and "module" keys.
 
     Returns:
-        DataFrame: A DataFrame containing the data from the Parquet file.
+        Any: Data read from the CSV file using the specified API.
     """
-    try:
-        import importlib
+    zone_lookup_csv_path = DATA_PATH / config["path"]["lookup_csv"]
 
-        mod = importlib.import_module(module)
-        df = mod.read_parquet(path)
-
-        return df
-    except ImportError:
-        raise ValueError(
-            f"Module '{module}' not found or does not support read_parquet."
-        )
+    api_name = config["module"]["name"]
+    api = importlib.import_module(api_name)
+    return api.read_csv(zone_lookup_csv_path)
 
 
-def read_csv_file(path: str, module: str) -> Any:
+def read_parquet_files(config: Dict) -> Any:
     """
-    Read a CSV file using the specified module's read_csv method.
+    Read and combine data from Parquet files. File paths and API are specified in config file.
 
     Args:
-        path (str): Path to the CSV file.
-        module: The module (e.g., pandas, polars) that provides the read_csv method.
+        config (Dict): Configuration dictionary with "path" and "module" keys.
 
     Returns:
-        DataFrame: A DataFrame containing the data from the CSV file.
+        Any: List of DataFrames containing data from the Parquet files.
     """
-    try:
-        import importlib
+    parquet_files_dict = config["path"]["parquet_files"]["data"]
 
-        mod = importlib.import_module(module)
-        df = mod.read_csv(path)
+    parquet_files = [
+        DATA_PATH / year / file
+        for year, file_list in parquet_files_dict.items()
+        for file in file_list
+    ]
 
-        return df
-    except ImportError:
-        raise ValueError(f"Module '{module}' not found or does not support read_csv.")
+    api_name = config["module"]["name"]
+    api = importlib.import_module(api_name)
+
+    dataframes = []
+    for file in parquet_files:
+        df = api.read_parquet(file)
+
+        if api_name == "pandas":
+            df_schema_corrected = df.astype(SCHEMA_DICT[api_name])
+            dataframes.append(df_schema_corrected)
+        elif api_name == "polars":
+            df_schema_corrected = api.DataFrame(
+                df.to_dict(), schema=SCHEMA_DICT[api_name]
+            )
+            dataframes.append(df_schema_corrected)
+
+    return api.concat(dataframes)

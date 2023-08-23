@@ -3,3 +3,19 @@ logging:
   enabled: true
   format: "%(asctime)s.%(msecs)03d [%(levelname)s]: %(message)s"
   level: "INFO"
+
+module:
+  name: "polars"
+
+path:
+  lookup_csv: "taxi+_zone_lookup.csv"
+  parquet_files:
+    data:
+      year=2011:
+        - "yellow_tripdata_2011-01.parquet"
+      #   - "yellow_tripdata_2011-02.parquet"
+      #   - "yellow_tripdata_2011-03.parquet"
+      year=2012:
+        - "yellow_tripdata_2012-01.parquet"
+      #   - "yellow_tripdata_2012-02.parquet"
+      #   - "yellow_tripdata_2012-03.parquet"

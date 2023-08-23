@@ -1,23 +1,25 @@
-import importlib
+from ppp.util import (
+    CONFIG_PATH,
+    DATA_PATH,
+    load_config,
+    logging_setup,
+    get_rss,
+    import_module,
+)
+
+from ppp.common import read_parquet_files, read_zone_lookup
 
 
-from ppp.util import CONFIG_PATH, DATA_PATH, load_config, logging_setup, get_rss
-from ppp.common import read_parquet_file, read_csv_file
-
-
-def main(mod_name="polars"):
+def main():
     # set up logger
     config = load_config(CONFIG_PATH)
     logger = logging_setup(config)
-    mod = importlib.import_mod("ppp." + mod_name)
+    mod = import_module(config)
 
     logger.info("resident memory before reading parquet [MB]: %s", get_rss())
 
-    parquet_path = DATA_PATH / "year=2011" / "yellow_tripdata_2011-01.parquet"
-    zone_lookup_csv_path = DATA_PATH / "taxi+_zone_lookup.csv"
-
-    df = read_parquet_file(parquet_path, mod)
-    zone_df = read_csv_file(zone_lookup_csv_path, mod)
+    zone_df = read_zone_lookup(config)
+    df = read_parquet_files(config)
 
     logger.info("df schema: %s", df.schema)
     logger.info("df preview: %s", df.head(5))
