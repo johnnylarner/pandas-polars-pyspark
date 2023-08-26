@@ -129,3 +129,22 @@ def read_parquet_files(config: Dict) -> Any:
             dataframes.append(df_schema_corrected)
 
     return api.concat(dataframes)
+
+
+def write_parquet_file(file_name: str, df: Any, config: Dict) -> None:
+    """
+    Write data to a Parquet file: ./data/file_name.parquet. API is specified in config file.
+
+    Args:
+        file_name (str): Name of the Parquet file (without extension).
+        df (Any): DataFrame containing data to be written to Parquet file.
+        config (Dict): Configuration dictionary with "path" and "module" keys.
+    """
+    parquet_file_path = DATA_PATH / file_name + ".parquet"
+
+    api_name = config["module"]["name"]
+
+    if api_name == "pandas":
+        df.to_parquet(parquet_file_path)
+    elif api_name == "polars":
+        df.write_parquet(parquet_file_path)
