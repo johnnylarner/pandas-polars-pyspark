@@ -148,3 +148,22 @@ def write_parquet_file(file_name: str, df: Any, config: Dict) -> None:
         df.to_parquet(parquet_file_path)
     elif api_name == "polars":
         df.write_parquet(parquet_file_path)
+
+
+def write_csv_file(file_name: str, df: Any, config: Dict) -> None:
+    """
+    Write data to a CSV file: ./data/file_name.CSV. API is specified in config file.
+
+    Args:
+        file_name (str): Name of the CSV file (without extension).
+        df (Any): DataFrame containing data to be written to CSV file.
+        config (Dict): Configuration dictionary with "path" and "module" keys.
+    """
+    parquet_file_path = DATA_PATH / file_name + ".csv"
+
+    api_name = config["module"]["name"]
+
+    if api_name == "pandas":
+        df.to_csv(parquet_file_path)
+    elif api_name == "polars":
+        df.write_csv(parquet_file_path)
