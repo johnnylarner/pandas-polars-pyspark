@@ -1,3 +1,5 @@
+from pprint import pformat
+
 from ppp.util import (
     CONFIG_PATH,
     DATA_PATH,
@@ -7,7 +9,7 @@ from ppp.util import (
     import_module,
 )
 
-from ppp.common import read_parquet_files, read_zone_lookup
+from ppp.common import read_parquet_files, read_zone_lookup, get_schema
 
 
 def main():
@@ -21,12 +23,12 @@ def main():
     zone_df = read_zone_lookup(config)
     df = read_parquet_files(config)
 
-    logger.info("df schema: %s", df.schema)
+    logger.info("df schema: %s", pformat(get_schema(df, config)))
     logger.info("df preview: %s", df.head(5))
     logger.info("resident memory after reading parquet [MB]: %s", get_rss())
 
     df = mod.add_features(df, zone_df)
-    # logger.info("df schema after add_features: %s", df.schema)
+    logger.info("df schema: %s", pformat(get_schema(df, config)))
     logger.info("df preview after add_features: %s", df.head(5))
     logger.info("resident memory after calling add_features [MB]: %s", get_rss())
 

@@ -167,3 +167,23 @@ def write_csv_file(file_name: str, df: Any, config: Dict) -> None:
         df.to_csv(parquet_file_path)
     elif api_name == "polars":
         df.write_csv(parquet_file_path)
+
+
+def get_schema(df: Any, config: Dict) -> Dict:
+    """
+    Get schema of DataFrame. API is specified in config file.
+
+    Args:
+        df (Any): DataFrame whose schema is to be returned.
+        config (Dict): Configuration dictionary with "module" key.
+
+    Returns:
+        Dict: Dictionary containing column names and data types.
+    """
+    api_name = config["module"]["name"]
+    api = importlib.import_module(api_name)
+
+    if api_name == "pandas":
+        return df.dtypes.to_dict()
+    elif api_name == "polars":
+        return df.schema
