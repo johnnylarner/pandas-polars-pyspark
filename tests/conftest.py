@@ -2,6 +2,22 @@ import pytest
 
 
 @pytest.fixture(scope="module")
+def pandas_df():
+    import pandas as pd
+
+    data = {"col1": [1, 2, 3], "col2": ["a", "b", "c"]}
+    return pd.DataFrame(data)
+
+
+@pytest.fixture(scope="module")
+def polars_df():
+    import polars as pl
+
+    data = {"col1": [1, 2, 3], "col2": ["a", "b", "c"]}
+    return pl.DataFrame(data)
+
+
+@pytest.fixture(scope="module")
 def locations():
     return {
         "pulocationid_borough": [
