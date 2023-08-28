@@ -140,7 +140,7 @@ def write_parquet_file(file_name: str, df: Any, config: Dict) -> None:
         df (Any): DataFrame containing data to be written to Parquet file.
         config (Dict): Configuration dictionary with "path" and "module" keys.
     """
-    parquet_file_path = DATA_PATH / file_name + ".parquet"
+    parquet_file_path = DATA_PATH / str(file_name + ".parquet")
 
     api_name = config["module"]["name"]
 

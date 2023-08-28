@@ -4,13 +4,33 @@ import polars as pl
 
 from unittest.mock import Mock
 
-
-from src.ppp.common import get_schema, write_csv_file
+from src.ppp.common import get_schema, write_csv_file, write_parquet_file
 
 
 # TODO: test for read_zone_lookup
 # TODO: test for read_parquet_files
-# TODO: write test for write_parquet_file
+
+
+def test_write_parquet_file_with_pandas(mock_data_frame, data_path):
+    file_name = "test_file"
+    parquet_file_path = data_path / str(file_name + ".parquet")
+
+    config = {"module": {"name": "pandas"}}
+
+    write_parquet_file(file_name, mock_data_frame, config)
+
+    assert mock_data_frame.to_parquet.called_once_with(parquet_file_path)
+
+
+def test_write_parquet_file_with_polars(mock_data_frame, data_path):
+    file_name = "test_file"
+    parquet_file_path = data_path / str(file_name + ".parquet")
+
+    config = {"module": {"name": "polars"}}
+
+    write_parquet_file(file_name, mock_data_frame, config)
+
+    assert mock_data_frame.to_parquet.called_once_with(parquet_file_path)
 
 
 def test_write_csv_pandas(mock_data_frame):

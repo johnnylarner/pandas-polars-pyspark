@@ -1,10 +1,16 @@
 import pytest
 from unittest.mock import Mock
+from ppp.util import DATA_PATH
 
 
 @pytest.fixture(scope="module")
 def mock_data_frame():
     return Mock()
+
+
+@pytest.fixture(scope="module")
+def data_path():
+    return DATA_PATH
 
 
 @pytest.fixture(scope="module")
