@@ -1,4 +1,10 @@
 import pytest
+from unittest.mock import Mock
+
+
+@pytest.fixture(scope="module")
+def mock_data_frame():
+    return Mock()
 
 
 @pytest.fixture(scope="module")
