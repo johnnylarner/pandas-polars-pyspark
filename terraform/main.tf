@@ -1,8 +1,8 @@
 terraform {
   backend "s3" {
-    bucket         = "pandas-polars-pyspark-terraform-state"
-    key            = "default"
-    region         = "eu-west-1"
+    bucket = "pandas-polars-pyspark-terraform-state"
+    key    = "default"
+    region = "eu-west-1"
   }
 }
 
@@ -10,65 +10,46 @@ provider "aws" {
   region = "eu-west-1"
 }
 
-
-# Create a new VPC
-resource "aws_vpc" "my_vpc" {
-  cidr_block = "10.0.0.0/16"  # Replace with your desired CIDR block for the VPC
+resource "aws_default_vpc" "default" {
   tags = {
-    Name = "PPP"  # Replace with a name of your choice
+    Name = "Default VPC"
   }
 }
 
-# Create a subnet within the VPC
-resource "aws_subnet" "my_subnet" {
-  vpc_id     = aws_vpc.my_vpc.id
-  cidr_block = "10.0.1.0/24"  # Replace with your desired CIDR block for the subnet
-  availability_zone = "eu-west-1a"  # Replace with your desired availability zone
-  tags = {
-      project = "ppp"
-    }
+data "aws_subnets" "default" {
+  filter {
+    name   = "vpc-id"
+    values = [aws_default_vpc.default.id]
+  }
 }
 
-# Create a security group for AWS Batch instances
-resource "aws_security_group" "batch_security_group" {
-  name_prefix = "BatchSG-"
-  vpc_id      = aws_vpc.my_vpc.id
 
-  # Allow SSH access from your local IP address (adjust the source_cidr_block if needed)
+resource "aws_default_security_group" "default" {
+  vpc_id = aws_default_vpc.default.id
+
   ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["95.91.209.4/32"]  # Replace with your public IP address
+    protocol  = -1
+    self      = true
+    from_port = 0
+    to_port   = 0
   }
 
-  # Allow outbound traffic to the internet
   egress {
-    from_port       = 0
-    to_port         = 0
-    protocol        = "-1"
-    cidr_blocks     = ["0.0.0.0/0"]
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
-  tags = {
-      project = "ppp"
-    }
-
 }
 
 
-# Output the security group IDs
-output "batch_security_group_id" {
-  value = aws_security_group.batch_security_group.id
-}
-
-
-module storage {
+module "storage" {
   source = "./storage"
 }
 
-module compute {
-  source = "./compute"
+module "compute" {
+  source             = "./compute"
   ecr_repository_url = module.storage.ecr_repository_url
-  subnet_id = aws_subnet.my_subnet.id
-  security_group_id = aws_security_group.batch_security_group.id
+  subnet_ids         = data.aws_subnets.default.ids
+  security_group_ids = [aws_default_security_group.default.id]
 }
