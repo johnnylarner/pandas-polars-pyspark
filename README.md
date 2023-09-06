@@ -2,6 +2,21 @@
 
 This project contains the code for the pandas-polars-pyspark (PPP) experiment.
 
+## Prerequisites
+This project uses terraform to manage some aspects of its AWS resources.
+Please follow the [Terraform install instructions](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli).
+
+Validate your installation by running:
+
+    terraform -help
+
+
+In addition you'll also need AWS CLI installed locally. You can find the install docs [here](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html).
+
+Validate your installation by running:
+
+    aws --version
+
 ## Getting Started
 
 To set up your local development environment, please run:
@@ -11,6 +26,26 @@ To set up your local development environment, please run:
 Behind the scenes, this creates a virtual environment and installs `ppp` along with its dependencies into a new virtualenv. Whenever you run `poetry run <command>`, that `<command>` is actually run inside the virtualenv managed by poetry.
 
 You can now import functions and classes from the module with `import ppp`.
+
+
+### Authenticating with AWS
+To request credentials for our AWS user, please contact @johnnylarner. Once you have these, you can configure your credentials by running:
+
+    aws configure
+
+
+### Building the terraform stack
+To update or build the terraform stack, run:
+
+    terraform init && terraform apply
+
+This will prompt you for use input
+
+### Destroying the stack
+To destory the stack, run:
+
+    terraform destroy
+
 
 ### Testing
 
