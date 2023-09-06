@@ -8,7 +8,13 @@ terraform {
 
 provider "aws" {
   region = "eu-west-1"
+
 }
+
+data "aws_region" "default" {
+  provider = "aws"
+}
+
 
 resource "aws_default_vpc" "default" {
   tags = {
@@ -52,4 +58,12 @@ module "compute" {
   ecr_repository_url = module.storage.ecr_repository_url
   subnet_ids         = data.aws_subnets.default.ids
   security_group_ids = [aws_default_security_group.default.id]
+}
+
+output "ecr_repository_url" {
+  value = module.storage.ecr_repository_url
+}
+
+output "aws_region" {
+  value = data.aws_region.default.name
 }
