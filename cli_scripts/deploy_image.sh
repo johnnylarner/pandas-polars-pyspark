@@ -19,7 +19,8 @@ echo "AWS_REGION: $AWS_REGION"
 
 # Extract credentials for docker login
 AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-AWS_USER_NAME=$(aws sts get-caller-identity --query Arn --output text | cut -d/ -f2)
+AWS_USER_NAME=$(aws sts get-caller-identity \
+    --query Arn --output text | cut -d/ -f2)
 
 # Login, build and push
 aws ecr get-login-password --region $AWS_REGION | \

@@ -21,20 +21,23 @@ echo "AWS_REGION: $AWS_REGION"
 
 # Extract credentials for docker login
 AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-AWS_USER_NAME=$(aws sts get-caller-identity --query Arn --output text | cut -d/ -f2)
+AWS_USER_NAME=$(aws sts get-caller-identity \
+    --query Arn --output text | cut -d/ -f2)
 
 # Login, build and push
 aws ecr get-login-password --region $AWS_REGION | \
     docker login --username AWS --password-stdin $ECR_URL
 
 
-image_ids=$(aws ecr list-images --repository-name $ECR_REPO_NAME --query 'imageIds[*]' --output json)
+image_ids=$(aws ecr list-images \
+    --repository-name $ECR_REPO_NAME --query 'imageIds[*]' --output json)
 
 if [ "$image_ids" != "[]" ]; then
   # Loop through and delete each image
     for image_id in $image_ids; do
         echo "Deleting image: $image_id"
-        aws ecr batch-delete-image --repository-name $ECR_REPO_NAME --image-ids "$image_id" --no-cli-pager
+        aws ecr batch-delete-image \
+        --repository-name $ECR_REPO_NAME --image-ids "$image_id" --no-cli-pager
     done
 fi
 
