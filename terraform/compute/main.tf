@@ -106,3 +106,11 @@ resource "aws_batch_job_definition" "ppp_job_definition" {
     ]
   })
 }
+
+output "job_queue_name" {
+  value = aws_batch_job_queue.ppp_job_queue.name
+}
+
+output "job_definition_name" {
+  value = aws_batch_job_definition.ppp_job_definition.name
+}
