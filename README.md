@@ -47,6 +47,17 @@ To destory the stack, run:
     terraform destroy
 
 
+### Running CLI scripts
+We have several UNIX shell scripts in the `cli_scripts` folder.
+
+Please make sure you `cd` into the directory before running any scripts:
+
+    cd cli_scripts
+    source deploy_image.sh
+    source delete_images.sh
+
+These scripts extract variables from our `terraform` stack. Any changes to the scripts should follow the same approach.
+
 ### Testing
 
 We use `pytest` as test framework. To execute the tests, please run
