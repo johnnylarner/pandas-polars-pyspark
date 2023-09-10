@@ -1,11 +1,20 @@
-FROM python:3.10
+FROM --platform=linux/amd64 python:3.10
 
-WORKDIR /code
+RUN pip install poetry==1.6.1 && poetry config virtualenvs.create false
 
-COPY dist/ .
-RUN pip install ./ppp-*.whl
+WORKDIR /app
+COPY pyproject.toml poetry.lock ./
+ENV POETRY_REQUESTS_TIMEOUT 300
+RUN poetry install --only main --no-root --no-interaction && \
+    poetry cache clear pypi --all
 
-COPY scripts/ ./scripts
-RUN ls
 
-CMD ["python3", "scripts/launch.py"]
+COPY ./src /app/src
+RUN poetry install --only-root
+
+COPY ./scripts /app/scripts
+COPY /config /app/config
+COPY /data/year=2011/yellow_tripdata_2011-01.parquet /app/data/year=2011/yellow_tripdata_2011-01.parquet
+COPY /data/taxi+_zone_lookup.csv /app/data/taxi+_zone_lookup.csv
+
+CMD ["python3", "/app/scripts/feature_engineering.py"]

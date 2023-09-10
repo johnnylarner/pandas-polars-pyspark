@@ -1,7 +1,8 @@
 #!/bin/bash
 REPO_ROOT="./.."
-DOCKER_IMAGE_NAME="ppp-dev"
-DOCKER_IMAGE_NAME_TAG="latest"
+IMAGE_NAME_AND_TAG="ppp-dev:dev"
+IMAGE_TAG="dev"
+
 
 # Add debug output for terraform directory
 TF_STORAGE_MODULE=$REPO_ROOT/terraform
@@ -26,5 +27,6 @@ AWS_USER_NAME=$(aws sts get-caller-identity \
 aws ecr get-login-password --region $AWS_REGION | \
     docker login --username AWS --password-stdin $ECR_URL
 
-docker build $REPO_ROOT -t $DOCKER_IMAGE_NAME:$DOCKER_IMAGE_NAME_TAG
-docker push $ECR_REPO_URL:$DOCKER_IMAGE_NAME_TAG
+docker buildx build --platform=linux/amd64  -t $IMAGE_NAME_AND_TAG $REPO_ROOT
+docker image tag $IMAGE_NAME_AND_TAG $ECR_REPO_URL:$IMAGE_TAG
+docker push $ECR_REPO_URL:$IMAGE_TAG

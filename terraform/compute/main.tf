@@ -92,17 +92,25 @@ resource "aws_batch_job_definition" "ppp_job_definition" {
   type = "container"
 
   container_properties = jsonencode({
-    image = "public.ecr.aws/amazonlinux/amazonlinux:latest"
-    command = ["echo", "hello world"]
+    image = "${var.ecr_repository_url}:latest"
+    # command = ["echo", "hello world"]
       resourceRequirements = [
       {
         type  = "VCPU"
-        value = "1"
+        value = "4"
       },
       {
         type  = "MEMORY"
-        value = "256"
+        value = "8192"
       }
     ]
   })
+}
+
+output "job_queue_name" {
+  value = aws_batch_job_queue.ppp_job_queue.name
+}
+
+output "job_definition_name" {
+  value = aws_batch_job_definition.ppp_job_definition.name
 }

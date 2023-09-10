@@ -67,3 +67,11 @@ output "ecr_repository_url" {
 output "aws_region" {
   value = data.aws_region.default.name
 }
+
+output "job_queue_name" {
+  value = module.compute.job_queue_name
+}
+
+output "job_definition_name" {
+  value = module.compute.job_definition_name
+}

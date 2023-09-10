@@ -27,12 +27,10 @@ Behind the scenes, this creates a virtual environment and installs `ppp` along w
 
 You can now import functions and classes from the module with `import ppp`.
 
-
 ### Authenticating with AWS
 To request credentials for our AWS user, please contact @johnnylarner. Once you have these, you can configure your credentials by running:
 
     aws configure
-
 
 ### Building the terraform stack
 To update or build the terraform stack, run:
@@ -46,17 +44,21 @@ To destory the stack, run:
 
     terraform destroy
 
+Note that it's not possible to delete our ECR repo without deleting all the images first. This can be acheived through the `delete_images.sh`. See instructions below about how to run that script.
 
 ### Running CLI scripts
 We have several UNIX shell scripts in the `cli_scripts` folder.
 
-Please make sure you `cd` into the directory before running any scripts:
+Please make sure you `cd` into the directory before running any scripts, as the terraform paths are hard coded.
 
-    cd cli_scripts
-    source deploy_image.sh
-    source delete_images.sh
+You can push our app image via the `deploy_image.sh` script. You can then submit a batch job - defined in our terraform stack - via the `submit_batch.sh` script.
+
+The `delete_images.sh` script is there to help clean up the terraform stack.
 
 These scripts extract variables from our `terraform` stack. Any changes to the scripts should follow the same approach.
+
+### Docker
+Currently we are building docker images build for `linux/amd64`. This means macOs and windows users can't use the images locally.
 
 ### Testing
 

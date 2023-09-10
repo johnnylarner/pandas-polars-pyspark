@@ -1,3 +1,5 @@
+import logging
+
 import polars as pl
 
 from ppp.polars import (
@@ -6,13 +8,15 @@ from ppp.polars import (
     calc_highest_tolls_per_route,
     calc_result_most_frequent_three_routes,
 )
-from ppp.util import CONFIG_PATH, DATA_PATH, load_config, logging_setup, get_rss
+from ppp.util import CONFIG_PATH, DATA_PATH, get_rss, load_config, logging_setup
+
+logger = logging.getLogger("ppp")
 
 
 def main():
     # set up logger
     config = load_config(CONFIG_PATH)
-    logger = logging_setup(config)
+    logging_setup(config)
 
     logger.info("resident memory before reading parquet [MB]: %s", get_rss())
 
