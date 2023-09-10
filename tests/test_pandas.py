@@ -11,8 +11,8 @@ from ppp.pandas import (
 )
 
 
-def test_read_csv(s3_data):
-    df = pd.read_parquet("s3://test-bucket/test_file.parquet")
+def test_read_csv(s3_data_uri):
+    df = pd.read_parquet(s3_data_uri)
     assert isinstance(df, pd.DataFrame)
 
 

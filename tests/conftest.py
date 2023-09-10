@@ -136,6 +136,11 @@ def s3_data(s3, bucket_config):
     yield data
 
 
+@pytest.fixture(scope="session")
+def s3_data_uri(s3_data, bucket_config):
+    return "s3://{Bucket}/{Key}".format(**bucket_config)
+
+
 @pytest.fixture(scope="module")
 def locations():
     return {
