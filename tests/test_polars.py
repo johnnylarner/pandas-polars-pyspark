@@ -7,6 +7,7 @@ from ppp.polars import (
     calc_cash_journeys_per_pickup,
     calc_highest_tolls_per_route,
     calc_result_most_frequent_three_routes,
+    read_parquet,
     update_payment_type_as_string_values,
 )
 
@@ -25,6 +26,11 @@ def assert_pl_frame_equal(
             f"DataFrames are not equal. Expected:\n{expected_df},\nactual:\n{actual_df}"
         )
         raise e
+
+
+def test_read_parquet(s3_data_uri):
+    df = read_parquet(s3_data_uri)
+    assert isinstance(df, pl.DataFrame)
 
 
 def test_update_payment_type_as_string_values():

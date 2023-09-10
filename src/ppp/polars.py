@@ -1,7 +1,14 @@
 import polars as pl
+import pyarrow.parquet as pq
+import s3fs
 from polars import DataFrame
 
-from ppp.common import PaymentType, ROUTE_COLUMNS
+from ppp.common import ROUTE_COLUMNS, PaymentType
+
+
+def read_parquet(path: str) -> DataFrame:
+    dataset = pq.ParquetDataset(path, filesystem=s3fs.S3FileSystem())
+    return pl.from_arrow(dataset.read())
 
 
 def add_features(trip_df: DataFrame, zone_df: DataFrame) -> DataFrame:
