@@ -1,7 +1,11 @@
 import pandas as pd
 from pandas import DataFrame
 
-from ppp.common import PaymentType, ROUTE_COLUMNS
+from ppp.common import ROUTE_COLUMNS, PaymentType
+
+
+def read_parquet(path: str) -> DataFrame:
+    return pd.read_parquet(path)
 
 
 def add_features(trip_df: DataFrame, zone_df: DataFrame) -> DataFrame:

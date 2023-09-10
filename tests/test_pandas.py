@@ -1,17 +1,19 @@
-import numpy as np
 import pandas as pd
-import pytest
 from pandas.testing import assert_frame_equal
 
 from ppp.pandas import (
-    add_features,
-    rename_columns_as_lowercase,
-    update_payment_type_as_string_values,
     add_borough_and_zone,
-    calc_result_most_frequent_three_routes,
     calc_cash_journeys_per_pickup,
     calc_highest_tolls_per_route,
+    calc_result_most_frequent_three_routes,
+    rename_columns_as_lowercase,
+    update_payment_type_as_string_values,
 )
+
+
+def test_read_csv(s3_data):
+    df = pd.read_parquet("s3://test-bucket/test_file.parquet")
+    assert isinstance(df, pd.DataFrame)
 
 
 def test_rename_columns_as_lowercase():

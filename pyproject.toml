@@ -18,6 +18,8 @@ pandas = "^2.0.3"
 polars = "^0.18.5"
 pyarrow = "^12.0.1"
 psutil = "^5.9.5"
+fsspec = "^2023.9.0"
+s3fs = "^2023.9.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^22.10"
@@ -25,6 +27,7 @@ pre-commit = "^2.20"
 pytest = "^7.2"
 pytest-cov = "^4.0"
 ipython = "^8.14.0"
+moto = {extras = ["s3", "server"], version = "^4.2.2"}
 
 [build-system]
 requires = ["poetry-core"]
