@@ -6,7 +6,16 @@ from polars import DataFrame
 from ppp.common import ROUTE_COLUMNS, PaymentType
 
 
+def _remove_s3_prefix_if_directory(path: str) -> str:
+    """Removes the s3 prefix if the path is a directory."""
+    if not path.startswith("s3://"):
+        return path
+
+    return path.lstrip("s3://")
+
+
 def read_parquet(path: str) -> DataFrame:
+    path = _remove_s3_prefix_if_directory(path)
     dataset = pq.ParquetDataset(path, filesystem=s3fs.S3FileSystem())
     return pl.from_arrow(dataset.read())
 

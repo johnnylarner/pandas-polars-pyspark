@@ -28,8 +28,13 @@ def assert_pl_frame_equal(
         raise e
 
 
-def test_read_parquet(s3_data_uri):
+def test_read_parquet_reads_partitioned_dir(s3_data_uri):
     df = read_parquet(s3_data_uri)
+    assert isinstance(df, pl.DataFrame)
+
+
+def test_read_parquet_reads_single_file(s3_data_uri):
+    df = read_parquet(f"{s3_data_uri}/year=2020/data.parquet")
     assert isinstance(df, pl.DataFrame)
 
 

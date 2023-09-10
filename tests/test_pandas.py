@@ -6,13 +6,19 @@ from ppp.pandas import (
     calc_cash_journeys_per_pickup,
     calc_highest_tolls_per_route,
     calc_result_most_frequent_three_routes,
+    read_parquet,
     rename_columns_as_lowercase,
     update_payment_type_as_string_values,
 )
 
 
-def test_read_csv(s3_data_uri):
-    df = pd.read_parquet(s3_data_uri)
+def test_read_csv_reads_partitioned_dir(s3_data_uri):
+    df = read_parquet(s3_data_uri)
+    assert isinstance(df, pd.DataFrame)
+
+
+def test_read_parquet_reads_single_file(s3_data_uri):
+    df = read_parquet(f"{s3_data_uri}/year=2020/data.parquet")
     assert isinstance(df, pd.DataFrame)
 
 

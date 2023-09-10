@@ -105,7 +105,7 @@ def aws_credentials():
 
 @pytest.fixture(scope="session")
 def bucket_config():
-    return {"Bucket": "test-bucket", "Key": "test_file.parquet"}
+    return {"Bucket": "test-bucket", "Key": "data"}
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -124,16 +124,15 @@ def s3_bucket(s3, bucket_config):
 def s3_data(s3, bucket_config):
     print("Setting up dummy S3 bucket with parquet data")
     dummy_parquet_df = pd.DataFrame({"a": [1, 2, 3]})
-    buffer = io.BytesIO()
-    dummy_parquet_df.to_parquet(buffer)
-    buffer.seek(0)
 
-    s3.put_object(**bucket_config, Body=buffer)
+    partitions = ["year=2020", "year=2021"]
+    for partition in partitions:
+        buffer = io.BytesIO()
+        dummy_parquet_df.to_parquet(buffer)
+        buffer.seek(0)
 
-    s3_client = boto3.client("s3", region_name="us-east-1")
-    data = s3_client.get_object(**bucket_config)
-
-    yield data
+        partition_key = f"{bucket_config['Key']}/{partition}/data.parquet"
+        s3.put_object(Bucket=bucket_config["Bucket"], Key=partition_key, Body=buffer)
 
 
 @pytest.fixture(scope="session")

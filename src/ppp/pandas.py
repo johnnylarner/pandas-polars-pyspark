@@ -5,7 +5,7 @@ from ppp.common import ROUTE_COLUMNS, PaymentType
 
 
 def read_parquet(path: str) -> DataFrame:
-    return pd.read_parquet(path)
+    return pd.read_parquet(path, engine="pyarrow")
 
 
 def add_features(trip_df: DataFrame, zone_df: DataFrame) -> DataFrame:
