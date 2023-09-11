@@ -40,22 +40,21 @@ To update or build the terraform stack, run:
 This will prompt you for use input
 
 ### Destroying the stack
+Terraform doesn't manage objects stored in S3 buckets or ECR repos. This means that these resources will only be destroyed if you empty them first. This is actually quite useful as we don't want to reupload everything each time we want to destory all our expensive ECS instances. If you _do_ want to delete _everything_, run the `delete_**.sh` scripts from the `cli_scripts` folder first.
+
 To destory the stack, run:
 
     terraform destroy
 
-Note that it's not possible to delete our ECR repo without deleting all the images first. This can be acheived through the `delete_images.sh`. See instructions below about how to run that script.
-
 ### Running CLI scripts
-We have several UNIX shell scripts in the `cli_scripts` folder.
+We have several UNIX shell scripts in the `cli_scripts` folder. These scripts extract variables from our `terraform` stack. Any changes to the scripts should follow the same approach.
 
 Please make sure you `cd` into the directory before running any scripts, as the terraform paths are hard coded.
 
+Copy your locally downloaded data to the terraform bucket by running `update_data_folder.sh`.
+
 You can push our app image via the `deploy_image.sh` script. You can then submit a batch job - defined in our terraform stack - via the `submit_batch.sh` script.
 
-The `delete_images.sh` script is there to help clean up the terraform stack.
-
-These scripts extract variables from our `terraform` stack. Any changes to the scripts should follow the same approach.
 
 ### Docker
 Currently we are building docker images build for `linux/amd64`. This means macOs and windows users can't use the images locally.
@@ -71,6 +70,10 @@ To run the tests with coverage information, please use
     pytest tests --cov=src --cov-report=html --cov-report=term
 
 and have a look at the `htmlcov` folder, after the tests are done.
+
+We use the `Moto` package to mock our `boto3` services. You can find the configuration of our mock s3 bucket in the `conftest.py` file. If you have IO dependent tests, you can try using the data made available over the `s3_data_uri` fixture.
+
+If you need to create more data, you can either do it inline via the boto3 client from the `s3` fixture or create another fixutre similar to the `s3_data` fixture.
 
 ### Distribution Package
 

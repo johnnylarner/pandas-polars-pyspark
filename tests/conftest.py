@@ -11,9 +11,19 @@ import aiohttp.typedefs
 import boto3
 import botocore.awsrequest
 import botocore.model
-import pandas as pd
+import polars as pl
 import pytest
 from moto import mock_s3
+
+
+def write_df_to_bytes_buffer(df: pl.DataFrame) -> io.BytesIO:
+    """
+    Write a DataFrame to a bytes buffer.
+    """
+    buffer = io.BytesIO()
+    df.write_parquet(buffer)
+    buffer.seek(0)
+    return buffer
 
 
 class MockAWSResponse(aiobotocore.awsrequest.AioAWSResponse):
@@ -123,13 +133,11 @@ def s3_bucket(s3, bucket_config):
 @pytest.fixture(scope="session")
 def s3_data(s3, bucket_config):
     print("Setting up dummy S3 bucket with parquet data")
-    dummy_parquet_df = pd.DataFrame({"a": [1, 2, 3]})
+    dummy_parquet_df = pl.DataFrame({"a": [1, 2, 3]})
 
     partitions = ["year=2020", "year=2021"]
     for partition in partitions:
-        buffer = io.BytesIO()
-        dummy_parquet_df.to_parquet(buffer)
-        buffer.seek(0)
+        buffer = write_df_to_bytes_buffer(dummy_parquet_df)
 
         partition_key = f"{bucket_config['Key']}/{partition}/data.parquet"
         s3.put_object(Bucket=bucket_config["Bucket"], Key=partition_key, Body=buffer)
