@@ -1,4 +1,5 @@
 import logging
+import sys
 
 import polars as pl
 
@@ -7,23 +8,37 @@ from ppp.polars import (
     calc_cash_journeys_per_pickup,
     calc_highest_tolls_per_route,
     calc_result_most_frequent_three_routes,
+    read_parquet,
 )
-from ppp.util import CONFIG_PATH, DATA_PATH, get_rss, load_config, logging_setup
+from ppp.util import (
+    CONFIG_PATH,
+    build_path_from_config,
+    get_rss,
+    load_config,
+    logging_setup,
+)
 
 logger = logging.getLogger("ppp")
 
 
-def main():
+def main(data_flag: str = "local"):
     # set up logger
     config = load_config(CONFIG_PATH)
     logging_setup(config)
 
     logger.info("resident memory before reading parquet [MB]: %s", get_rss())
 
-    parquet_dir = DATA_PATH / "year=2011" / "yellow_tripdata_2011-01.parquet"
+    data_config = config["data"]
+    base_path = build_path_from_config(data_flag, data_config)
 
-    df = pl.read_parquet(parquet_dir)
-    zone_df = pl.read_csv(DATA_PATH / "taxi+_zone_lookup.csv")
+    trip_data = base_path / data_config["trip_file"]
+    zone_data = base_path / data_config["zone_file"]
+
+    logger.info("Reading trip data from %s", trip_data)
+    df = read_parquet(str(trip_data))
+
+    logger.info("Reading zone data from %s", zone_data)
+    zone_df = pl.read_csv(str(zone_data))
 
     logger.info("df schema: %s", df.schema)
     logger.info("df preview: %s", df.head(5))
@@ -45,4 +60,12 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    data_flag_provided = len(sys.argv) > 1
+    data_flag = sys.argv[1] if data_flag_provided else "local"
+
+    if data_flag not in ("local", "s3"):
+        raise ValueError(
+            f"Invalid data flag {data_flag}. Valid values are 'local' and 's3'."
+        )
+
+    main(data_flag)
