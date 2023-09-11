@@ -8,10 +8,11 @@ from ppp.common import ROUTE_COLUMNS, PaymentType
 
 def _remove_s3_prefix_if_directory(path: str) -> str:
     """Removes the s3 prefix if the path is a directory."""
-    if not path.startswith("s3://"):
-        return path
-
-    return path.lstrip("s3://")
+    if path.startswith("s3://"):
+        return path.lstrip("s3://")
+    elif path.startswith("s3a://"):
+        return path.lstrip("s3a://")
+    return path
 
 
 def read_parquet(path: str) -> DataFrame:
@@ -21,9 +22,12 @@ def read_parquet(path: str) -> DataFrame:
     `path` should be an s3 path to a single file
     or a partitioned directory.
     """
-    path = _remove_s3_prefix_if_directory(path)
-    dataset = pq.ParquetDataset(path, filesystem=s3fs.S3FileSystem())
-    return pl.from_arrow(dataset.read())
+    if path.startswith("s3://") or path.startswith("s3a://"):
+        path = _remove_s3_prefix_if_directory(path)
+        dataset = pq.ParquetDataset(path, filesystem=s3fs.S3FileSystem())
+        return pl.from_arrow(dataset.read())
+
+    return pl.read_parquet(path)
 
 
 def add_features(trip_df: DataFrame, zone_df: DataFrame) -> DataFrame:
