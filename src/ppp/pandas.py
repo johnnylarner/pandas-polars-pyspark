@@ -5,6 +5,12 @@ from ppp.common import ROUTE_COLUMNS, PaymentType
 
 
 def read_parquet(path: str) -> DataFrame:
+    """Returns a pandas DataFrame containing
+    the data from the parquet file at `path`.
+
+    `path` should be an s3 path to a single file
+    or a partitioned directory.
+    """
     return pd.read_parquet(path, engine="pyarrow")
 
 

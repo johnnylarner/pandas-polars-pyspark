@@ -15,6 +15,12 @@ def _remove_s3_prefix_if_directory(path: str) -> str:
 
 
 def read_parquet(path: str) -> DataFrame:
+    """Returns a polars DataFrame containing
+    the data from the parquet file at `path`.
+
+    `path` should be an s3 path to a single file
+    or a partitioned directory.
+    """
     path = _remove_s3_prefix_if_directory(path)
     dataset = pq.ParquetDataset(path, filesystem=s3fs.S3FileSystem())
     return pl.from_arrow(dataset.read())
