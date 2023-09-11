@@ -27,6 +27,10 @@ resource "aws_ecr_repository" "my_repository" {
   }
 }
 
+output "bucket_name" {
+  value = aws_s3_bucket.my_bucket.id
+}
+
 output "ecr_repository_url" {
   value = aws_ecr_repository.my_repository.repository_url
 }

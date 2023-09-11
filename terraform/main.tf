@@ -60,12 +60,16 @@ module "compute" {
   security_group_ids = [aws_default_security_group.default.id]
 }
 
-output "ecr_repository_url" {
-  value = module.storage.ecr_repository_url
-}
-
 output "aws_region" {
   value = data.aws_region.default.name
+}
+
+output "bucket_name" {
+  value = module.storage.bucket_name
+}
+
+output "ecr_repository_url" {
+  value = module.storage.ecr_repository_url
 }
 
 output "job_queue_name" {
