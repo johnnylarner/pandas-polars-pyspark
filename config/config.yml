@@ -3,3 +3,10 @@ logging:
   enabled: true
   format: "%(asctime)s.%(msecs)03d [%(levelname)s]: %(message)s"
   level: "INFO"
+
+data:
+  s3:
+    bucket: "pandas-polars-pyspark"
+    key: "data"
+  zone_file: "taxi+_zone_lookup.csv"
+  trip_file: "year=2011/yellow_tripdata_2011-01.parquet"

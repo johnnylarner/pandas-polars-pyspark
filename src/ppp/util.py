@@ -1,15 +1,20 @@
 import logging
-import os, psutil
+import os
+import subprocess
 from pathlib import Path
 from typing import Any, Dict, Union
 
 import pkg_resources
+import psutil
 import yaml
+from cloudpathlib import S3Path
 
 logger = logging.getLogger("ppp")
 
-CONFIG_PATH = Path(__file__).parent.parent.parent / "config" / "config.yml"
-DATA_PATH = Path(__file__).parent.parent.parent / "data"
+ROOT = Path(__file__).parent.parent.parent
+CONFIG_PATH = ROOT / "config" / "config.yml"
+DATA_PATH = ROOT / "data"
+TERRAFORM_PATH = ROOT / "terraform"
 
 
 def get_resource_string(path: str, decode=True) -> Union[str, bytes]:
@@ -23,6 +28,27 @@ def get_resource_string(path: str, decode=True) -> Union[str, bytes]:
     """
     s = pkg_resources.resource_string(__name__.split(".")[0], path)
     return s.decode(errors="ignore") if decode else s
+
+
+def get_resource_name_from_terraform(resource_name: str, terraform_dir: Path) -> str:
+    """Returns the bucket name from the terraform state file."""
+    logger.debug("Getting %s from terraform state", resource_name)
+
+    resource = subprocess.check_output(
+        f" terraform -chdir={terraform_dir} output -raw {resource_name}",
+        shell=True,
+    ).decode("utf-8")
+
+    logger.debug("Got %s from terraform state", resource_name)
+    return resource
+
+
+def build_path_from_config(type: str, config: dict[str, dict[str, str]]) -> str:
+    if type == "local":
+        return DATA_PATH
+    elif type == "s3":
+        s3_config = config["s3"]
+        return S3Path(f"s3://{s3_config['bucket']}/{s3_config['key']}")
 
 
 def load_config(config_file: Union[str, Path]) -> Dict[str, Any]:
@@ -55,4 +81,5 @@ def logging_setup(config: Dict):
 
 def get_rss() -> float:
     """calc RSS (resident set size) in bytes and transform it to Kilobyte"""
+    return psutil.Process(os.getpid()).memory_info().rss / (1024 * 1024)
     return psutil.Process(os.getpid()).memory_info().rss / (1024 * 1024)
