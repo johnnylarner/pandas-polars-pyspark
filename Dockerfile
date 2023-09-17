@@ -1,4 +1,5 @@
-FROM --platform=linux/amd64 python:3.10
+ARG BUILD_PLATFORM
+FROM --platform=$BUILD_PLATFORM python:3.10
 
 RUN pip install poetry==1.6.1 && poetry config virtualenvs.create false
 

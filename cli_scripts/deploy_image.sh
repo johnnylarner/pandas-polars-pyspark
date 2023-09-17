@@ -3,7 +3,8 @@ REPO_ROOT="./.."
 IMAGE_NAME_AND_TAG="ppp-dev:dev"
 IMAGE_TAG="dev"
 
-
+source ./set_cloud_build_env.sh
+echo "Building for with platform: $BUILD_PLATFORM"
 # Add debug output for terraform directory
 TF_STORAGE_MODULE=$REPO_ROOT/terraform
 echo "TF_STORAGE_MODULE: $TF_STORAGE_MODULE"

@@ -90,7 +90,11 @@ You can push our app image via the `deploy_image.sh` script. You can then submit
 
 
 ### Docker
-Currently we are building docker images build for `linux/amd64`. This means macOs and windows users can't use the images locally.
+When building our image, docker will default to the system build platform. This means that images built on MacOS M series devices will have an incompatible build for cloud environments. To address this, we parameterize the build using the build arg `BUILD_PLATFORM`.
+
+There are two shell scripts that set this for the `local` and `cloud` builds.
+
+When running `docker build` you can pass the argument `--build-arg BUILD_PLATFORM=$BUILD_PLATFORM` to declare the build platform.
 
 ### Testing
 
