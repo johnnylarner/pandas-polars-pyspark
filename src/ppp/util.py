@@ -43,7 +43,9 @@ def get_resource_name_from_terraform(resource_name: str, terraform_dir: Path) ->
     return resource
 
 
-def build_path_from_config(type: str, config: dict[str, dict[str, str]]) -> str:
+def build_path_from_config(
+    type: str, config: dict[str, dict[str, str]]
+) -> Path | S3Path:
     if type == "local":
         return DATA_PATH
     elif type == "s3":
@@ -81,5 +83,4 @@ def logging_setup(config: Dict):
 
 def get_rss() -> float:
     """calc RSS (resident set size) in bytes and transform it to Kilobyte"""
-    return psutil.Process(os.getpid()).memory_info().rss / (1024 * 1024)
     return psutil.Process(os.getpid()).memory_info().rss / (1024 * 1024)
