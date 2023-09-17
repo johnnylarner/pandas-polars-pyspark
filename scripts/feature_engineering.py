@@ -1,6 +1,7 @@
 import logging
 import sys
 
+import boto3
 import polars as pl
 
 from ppp.polars import (
@@ -25,6 +26,8 @@ def main(data_flag: str = "local"):
     # set up logger
     config = load_config(CONFIG_PATH)
     logging_setup(config)
+
+    logger.info("Connected to AWS as: %s", boto3.client("sts").get_caller_identity())
 
     logger.info("resident memory before reading parquet [MB]: %s", get_rss())
 
