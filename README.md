@@ -17,6 +17,17 @@ Validate your installation by running:
 
     aws --version
 
+
+This project relies on the OS NYC city taxi data set. As downloading the data is a one time step, we don't have a way of automating it.
+
+Below are the specifications for which files need to be downloaded manually. Please save them in the `data` folder of your repository.
+
+#### Yearly yellow cab data
+For the years 2011-2013, [please download](https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page) the __Yellow Taxi Trip Records__ for each month.
+
+#### Zone lookup table
+Here the download link for the [zone lookup table](https://d37ci6vzurychx.cloudfront.net/misc/taxi+_zone_lookup.csv).
+
 ## Getting Started
 
 To set up your local development environment, please run:
@@ -26,6 +37,28 @@ To set up your local development environment, please run:
 Behind the scenes, this creates a virtual environment and installs `ppp` along with its dependencies into a new virtualenv. Whenever you run `poetry run <command>`, that `<command>` is actually run inside the virtualenv managed by poetry.
 
 You can now import functions and classes from the module with `import ppp`.
+
+
+### Partition your local data
+Once you've downloaded the taxi data, you can partition by running:
+
+    python scripts/partition_data.py
+
+### Locally running scripts
+You can test out the feature engineering script by running:
+
+    python scripts/feature_engineering.py
+
+By default this will run the script using local data. If you want to be explicit, you can run the script with the `local` argument:
+
+    python scripts/feature_engineering.py local
+
+
+### Running scripts with S3 data
+You can also run the script using the the s3 argument to use the data on s3:
+
+    python scripts/feature_engineering.py s3
+
 
 ### Authenticating with AWS
 To request credentials for our AWS user, please contact @johnnylarner. Once you have these, you can configure your credentials by running:
