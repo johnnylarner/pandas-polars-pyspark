@@ -94,7 +94,16 @@ When building our image, docker will default to the system build platform. This 
 
 There are two shell scripts that set this for the `local` and `cloud` builds.
 
-When running `docker build` you can pass the argument `--build-arg BUILD_PLATFORM=$BUILD_PLATFORM` to declare the build platform.
+When running `docker build` you can pass the argument `--build-arg PLATFORM=$BUILD_PLATFORM` to declare the build platform. For example:
+
+
+    docker build -t ppp:latest --build-arg PLATFORM=$BUILD_PLATFORM  .
+
+
+To run the container locally, mounting your AWS credentials as read-only, run:
+
+    docker run -v $HOME/.aws/credentials:/app/.aws/credentials:ro  ppp
+
 
 ### Testing
 
